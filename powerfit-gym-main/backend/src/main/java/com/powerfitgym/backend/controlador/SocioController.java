@@ -1,6 +1,7 @@
 package com.powerfitgym.backend.controlador;
 
 import com.powerfitgym.backend.entidad.Socio;
+import com.powerfitgym.backend.repositorio.SocioRepository;
 import com.powerfitgym.backend.servicio.SocioService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,9 +15,16 @@ import java.util.List;
 public class SocioController {
 
     private final SocioService socioService;
+    private final SocioRepository socioRepository;
 
-    public SocioController(SocioService socioService) {
+    public SocioController(SocioService socioService, SocioRepository socioRepository) {
         this.socioService = socioService;
+        this.socioRepository = socioRepository;
+    }
+
+    @GetMapping("/metricas")
+    public ResponseEntity<java.util.Map<String, Object>> metricas() {
+        return ResponseEntity.ok(socioService.obtenerMetricasSocios());
     }
 
     @GetMapping
@@ -25,11 +33,17 @@ public class SocioController {
             @RequestParam(required = false) Boolean activo) {
 
         if (documento != null && !documento.isBlank()) {
-            return ResponseEntity.ok(List.of(socioService.buscarPorDocumento(documento)));
+            return socioRepository.findByDocumento(documento)
+                    .map(socio -> ResponseEntity.ok(List.of(socio)))
+                    .orElse(ResponseEntity.ok(List.of()));
         }
-        if (Boolean.TRUE.equals(activo)) {
-            return ResponseEntity.ok(socioService.listarActivos());
+
+        // 🔥 Buscamos directo en el repositorio (evitamos el error rojo)
+        if (activo != null && activo.equals(true)) {
+            return ResponseEntity.ok(socioRepository.findByActivoTrue());
         }
+
+        // Este sí lo tienes en tu servicio
         return ResponseEntity.ok(socioService.listarTodos());
     }
 
@@ -43,8 +57,13 @@ public class SocioController {
         return new ResponseEntity<>(socioService.crear(socio), HttpStatus.CREATED);
     }
 
-    @PatchMapping("/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<Socio> actualizar(@PathVariable Long id, @RequestBody Socio socio) {
+        return ResponseEntity.ok(socioService.actualizar(id, socio));
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<Socio> actualizarParcial(@PathVariable Long id, @RequestBody Socio socio) {
         return ResponseEntity.ok(socioService.actualizar(id, socio));
     }
 

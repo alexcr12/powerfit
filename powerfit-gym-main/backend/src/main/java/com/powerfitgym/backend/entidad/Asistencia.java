@@ -11,18 +11,25 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Asistencia {
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "socio_id", nullable = false)
+    private Socio socio;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "socio_id", nullable = false)
-    private Socio socio;
 
     @Column(name = "fecha_hora", nullable = false)
     private LocalDateTime fechaHora;
 
     @Column(nullable = false, length = 80)
     private String sede;
+
+    public Socio getSocio() {
+        return socio;
+    }
+
+    public void setSocio(Socio socio) {
+        this.socio = socio;
+    }
 }

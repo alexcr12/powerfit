@@ -44,12 +44,12 @@ export default function Table({
   };
 
   return (
-    <div className="bg-slate-900/90 border border-slate-800 rounded-3xl overflow-hidden shadow-xl">
+    <div className="bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 rounded-3xl overflow-hidden shadow-xl transition-colors duration-300">
       {/* Barra de herramientas superior */}
       {searchable && (
-        <div className="p-4 sm:p-5 border-b border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="p-4 sm:p-5 border-b border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="relative w-full sm:max-w-xs">
-            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
+            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 dark:text-slate-500">
               <Search size={16} />
             </div>
             <input
@@ -57,12 +57,12 @@ export default function Table({
               value={searchTerm}
               onChange={handleSearchChange}
               placeholder={searchPlaceholder}
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-3.5 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition-colors"
+              className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl pl-9 pr-3.5 py-2 text-xs text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition-colors"
             />
           </div>
 
-          <div className="text-xs text-slate-400 self-end sm:self-center font-medium">
-            Total registros: <span className="text-emerald-400 font-semibold">{filteredData.length}</span>
+          <div className="text-xs text-slate-500 dark:text-slate-400 self-end sm:self-center font-medium">
+            Total registros: <span className="text-emerald-600 dark:text-emerald-400 font-semibold">{filteredData.length}</span>
           </div>
         </div>
       )}
@@ -70,7 +70,7 @@ export default function Table({
       {/* Tabla Responsive */}
       <div className="overflow-x-auto">
         <table className="w-full text-left text-xs">
-          <thead className="bg-slate-950/60 border-b border-slate-800 text-slate-300 font-semibold uppercase tracking-wider text-[11px]">
+          <thead className="bg-slate-50 dark:bg-slate-950/60 border-b border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 font-semibold uppercase tracking-wider text-[11px]">
             <tr>
               {columns.map((col, idx) => (
                 <th key={idx} className={`px-5 py-3.5 ${col.headerClass || ''}`}>
@@ -80,12 +80,12 @@ export default function Table({
               {actions && <th className="px-5 py-3.5 text-right">Acciones</th>}
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-800/80">
+          <tbody className="divide-y divide-slate-200 dark:divide-slate-800/80">
             {paginatedData.length === 0 ? (
               <tr>
                 <td colSpan={columns.length + (actions ? 1 : 0)} className="px-5 py-12 text-center text-slate-500">
                   <div className="flex flex-col items-center justify-center gap-2">
-                    <Inbox size={32} className="text-slate-600" />
+                    <Inbox size={32} className="text-slate-400 dark:text-slate-600" />
                     <p className="text-sm font-medium">No se encontraron registros</p>
                     <p className="text-xs text-slate-400">Intenta con otro término de búsqueda o agrega un nuevo elemento.</p>
                   </div>
@@ -93,9 +93,9 @@ export default function Table({
               </tr>
             ) : (
               paginatedData.map((row, rowIdx) => (
-                <tr key={row.id || rowIdx} className="hover:bg-slate-800/40 transition-colors">
+                <tr key={row.id || rowIdx} className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
                   {columns.map((col, colIdx) => (
-                    <td key={colIdx} className={`px-5 py-3.5 text-slate-300 ${col.cellClass || ''}`}>
+                    <td key={colIdx} className={`px-5 py-3.5 text-slate-700 dark:text-slate-300 ${col.cellClass || ''}`}>
                       {col.render ? col.render(row) : row[col.accessor]}
                     </td>
                   ))}
@@ -113,22 +113,22 @@ export default function Table({
 
       {/* Barra de Paginación */}
       {totalPages > 1 && (
-        <div className="p-4 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
+        <div className="p-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
           <span>
-            Página <strong className="text-white">{currentPage}</strong> de <strong className="text-white">{totalPages}</strong>
+            Página <strong className="text-slate-800 dark:text-white">{currentPage}</strong> de <strong className="text-slate-800 dark:text-white">{totalPages}</strong>
           </span>
           <div className="flex items-center gap-2">
             <button
               onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
               disabled={currentPage === 1}
-              className="p-1.5 rounded-lg bg-slate-950 border border-slate-800 hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed text-slate-300 transition-colors cursor-pointer"
+              className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 hover:bg-slate-200 dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed text-slate-600 dark:text-slate-300 transition-colors cursor-pointer"
             >
               <ChevronLeft size={16} />
             </button>
             <button
               onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
               disabled={currentPage === totalPages}
-              className="p-1.5 rounded-lg bg-slate-950 border border-slate-800 hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed text-slate-300 transition-colors cursor-pointer"
+              className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 hover:bg-slate-200 dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed text-slate-600 dark:text-slate-300 transition-colors cursor-pointer"
             >
               <ChevronRight size={16} />
             </button>

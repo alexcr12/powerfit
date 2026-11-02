@@ -14,11 +14,9 @@ public class CategoriaService {
     public CategoriaService(CategoriaRepository categoriaRepository) {
         this.categoriaRepository = categoriaRepository;
     }
-
     public List<Categoria> listarTodas() {
         return categoriaRepository.findAll();
     }
-
     public List<Categoria> listarActivas() {
         return categoriaRepository.findByActivoTrue();
     }

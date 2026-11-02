@@ -2,9 +2,11 @@ package com.powerfitgym.backend.repositorio;
 
 import com.powerfitgym.backend.entidad.Membresia;
 import org.springframework.data.jpa.repository.JpaRepository;
+
 import java.util.List;
 
 public interface MembresiaRepository extends JpaRepository<Membresia, Long> {
     List<Membresia> findBySocioId(Long socioId);
+
     List<Membresia> findByEstado(String estado);
 }

@@ -2,6 +2,7 @@ package com.powerfitgym.backend.servicio;
 
 import com.powerfitgym.backend.entidad.Usuario;
 import com.powerfitgym.backend.repositorio.UsuarioRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,9 +11,11 @@ import java.util.List;
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UsuarioService(UsuarioRepository usuarioRepository) {
+    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public List<Usuario> listarTodos() {
@@ -28,15 +31,27 @@ public class UsuarioService {
         if (usuarioRepository.existsByEmail(usuario.getEmail())) {
             throw new RuntimeException("El correo ya está registrado");
         }
+
+        usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
         return usuarioRepository.save(usuario);
     }
 
     public Usuario actualizar(Long id, Usuario datosActualizados) {
         Usuario usuario = buscarPorId(id);
-        if (datosActualizados.getNombre() != null) usuario.setNombre(datosActualizados.getNombre());
-        if (datosActualizados.getEmail() != null) usuario.setEmail(datosActualizados.getEmail());
-        if (datosActualizados.getPassword() != null) usuario.setPassword(datosActualizados.getPassword());
-        if (datosActualizados.getRol() != null) usuario.setRol(datosActualizados.getRol());
+
+        if (datosActualizados.getNombre() != null)
+            usuario.setNombre(datosActualizados.getNombre());
+
+        if (datosActualizados.getEmail() != null)
+            usuario.setEmail(datosActualizados.getEmail());
+
+        if (datosActualizados.getPassword() != null && !datosActualizados.getPassword().isEmpty()) {
+            usuario.setPassword(passwordEncoder.encode(datosActualizados.getPassword()));
+        }
+
+        if (datosActualizados.getRol() != null)
+            usuario.setRol(datosActualizados.getRol());
+
         return usuarioRepository.save(usuario);
     }
 

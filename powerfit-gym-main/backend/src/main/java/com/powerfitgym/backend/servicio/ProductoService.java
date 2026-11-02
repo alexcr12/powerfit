@@ -1,6 +1,8 @@
 package com.powerfitgym.backend.servicio;
 
+import com.powerfitgym.backend.entidad.Categoria;
 import com.powerfitgym.backend.entidad.Producto;
+import com.powerfitgym.backend.repositorio.CategoriaRepository;
 import com.powerfitgym.backend.repositorio.ProductoRepository;
 import org.springframework.stereotype.Service;
 
@@ -9,9 +11,11 @@ import java.util.List;
 @Service
 public class ProductoService {
 
+    private final CategoriaRepository categoriaRepository;
     private final ProductoRepository productoRepository;
 
-    public ProductoService(ProductoRepository productoRepository) {
+    public ProductoService(CategoriaRepository categoriaRepository, ProductoRepository productoRepository) {
+        this.categoriaRepository = categoriaRepository;
         this.productoRepository = productoRepository;
     }
 
@@ -33,16 +37,33 @@ public class ProductoService {
     }
 
     public Producto crear(Producto producto) {
+        if (producto.getCategoria() != null && producto.getCategoria().getId() != null) {
+            Categoria catReal = categoriaRepository.findById(producto.getCategoria().getId())
+                    .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
+            producto.setCategoria(catReal);
+        }
         return productoRepository.save(producto);
     }
 
-    public Producto actualizar(Long id, Producto datosActualizados) {
-        Producto producto = buscarPorId(id);
-        if (datosActualizados.getNombre() != null) producto.setNombre(datosActualizados.getNombre());
-        if (datosActualizados.getPrecioBase() != null) producto.setPrecioBase(datosActualizados.getPrecioBase());
-        if (datosActualizados.getSede() != null) producto.setSede(datosActualizados.getSede());
-        if (datosActualizados.getActivo() != null) producto.setActivo(datosActualizados.getActivo());
-        if (datosActualizados.getCategoria() != null) producto.setCategoria(datosActualizados.getCategoria());
+    public Producto actualizar(Long id, Producto datos) {
+        Producto producto = productoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+
+        if (datos.getNombre() != null)
+            producto.setNombre(datos.getNombre());
+        if (datos.getSede() != null)
+            producto.setSede(datos.getSede());
+        if (datos.getPrecioBase() != null)
+            producto.setPrecioBase(datos.getPrecioBase());
+        if (datos.getActivo() != null)
+            producto.setActivo(datos.getActivo());
+
+        if (datos.getCategoria() != null && datos.getCategoria().getId() != null) {
+            Categoria catReal = categoriaRepository.findById(datos.getCategoria().getId())
+                    .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
+            producto.setCategoria(catReal);
+        }
+
         return productoRepository.save(producto);
     }
 

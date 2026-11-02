@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { CalendarCheck, Plus, Edit2, Trash2, MapPin, Clock, Calendar } from 'lucide-react';
 import { asistenciasService } from '../../api/asistenciasService';
 import { sociosService } from '../../api/sociosService';
 import { useToast } from '../../context/ToastContext';
 import { formatDateTime } from '../../utils/formatters';
+import { Client } from '@stomp/stompjs';
+import SockJS from 'sockjs-client/dist/sockjs.min.js';
 import Table from '../../components/common/Table';
 import Modal from '../../components/common/Modal';
 import FormField from '../../components/common/FormField';
@@ -20,7 +22,6 @@ export default function AsistenciasPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Modal Edición (RF20)
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingAsistencia, setEditingAsistencia] = useState(null);
   const [formData, setFormData] = useState({
@@ -29,13 +30,42 @@ export default function AsistenciasPage() {
   });
   const [saving, setSaving] = useState(false);
 
-  // Diálogo Eliminación Física (RF21)
   const [confirmDelete, setConfirmDelete] = useState({
     isOpen: false,
     asistencia: null,
     loading: false,
   });
 
+  const stompClient = useRef(null);
+
+  useEffect(() => {
+    const client = new Client({
+      webSocketFactory: () => new SockJS('http://localhost:8080/ws'),
+      reconnectDelay: 5000, 
+      onConnect: () => {
+        client.subscribe('/topic/asistencias', (message) => {
+          const nuevaAsistencia = JSON.parse(message.body);
+          
+          setAsistencias((prev) => [nuevaAsistencia, ...prev]);
+
+          const nombreSocio = nuevaAsistencia.socio?.nombre || 'Un socio';
+          
+          addToast(`¡Ingreso registrado! ${nombreSocio} acaba de entrar a ${nuevaAsistencia.sede}.`, 'success', 5000);
+        });
+      },
+      onStompError: (frame) => {
+        console.error('Error WebSocket:', frame);
+      }
+    });
+
+    client.activate();
+    stompClient.current = client;
+
+    return () => {
+      client.deactivate();
+    };
+  }, [addToast]);
+  
   const loadData = async () => {
     try {
       setLoading(true);
@@ -68,14 +98,13 @@ export default function AsistenciasPage() {
 
   const handleSaveEdit = async (e) => {
     e.preventDefault();
-    if (!formData.fecha_hora.trim()) {
+    if (!(formData.fecha_hora || '').trim()) {
       addToast('La fecha y hora son obligatorias.', 'error');
       return;
     }
 
     try {
       setSaving(true);
-      // RF20: Editar / corregir asistencia
       await asistenciasService.update(editingAsistencia.id, formData);
       addToast('Asistencia corregida exitosamente.', 'success');
       setIsModalOpen(false);
@@ -93,9 +122,8 @@ export default function AsistenciasPage() {
 
     try {
       setConfirmDelete((prev) => ({ ...prev, loading: true }));
-      // RF21: Eliminación física
       await asistenciasService.delete(item.id);
-      addToast('Registro de asistencia eliminado físicamente de la base de datos.', 'info');
+      addToast('Registro de asistencia eliminado físicamente.', 'info');
       setConfirmDelete({ isOpen: false, asistencia: null, loading: false });
       loadData();
     } catch {
@@ -117,15 +145,17 @@ export default function AsistenciasPage() {
       header: 'Socio',
       accessor: 'socio_id',
       render: (a) => {
-        const s = sociosMap[a.socio_id];
+        const socioId = a.socio?.id ?? a.socioId ?? a.socio_id;
+        const s = a.socio ?? (socioId ? sociosMap[socioId] : null);
+
         return (
           <div>
             <span className="font-semibold text-white block">
-              {s ? s.nombre : `Socio #${a.socio_id}`}
+              {s?.nombre ? s.nombre : (socioId ? `Socio #${socioId}` : 'Socio no asignado')}
             </span>
             <span className="text-[11px] text-slate-400">
-              {s ? `DNI: ${s.documento}` : ''}
-              {!s?.activo && <span className="text-red-400 ml-1">(Inactivo R2)</span>}
+              {s?.documento ? `DNI: ${s.documento}` : ''}
+              {s && !s.activo && <span className="text-red-400 ml-1">(Inactivo R2)</span>}
             </span>
           </div>
         );
@@ -134,11 +164,14 @@ export default function AsistenciasPage() {
     {
       header: 'Fecha y Hora',
       accessor: 'fecha_hora',
-      render: (a) => (
-        <span className="font-mono text-slate-200">
-          {a.fecha_hora}
-        </span>
-      ),
+      render: (a) => {
+        const rawDate = a.fechaHora ?? a.fecha_hora;
+        return (
+          <span className="font-mono text-slate-200">
+            {rawDate ? rawDate.replace('T', ' ') : '-'}
+          </span>
+        );
+      }
     },
     {
       header: 'Sede de Ingreso',
@@ -205,7 +238,6 @@ export default function AsistenciasPage() {
         />
       )}
 
-      {/* Modal Corrección RF20 */}
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -216,7 +248,7 @@ export default function AsistenciasPage() {
           <FormField
             label="Fecha y Hora (YYYY-MM-DD HH:mm)"
             name="fecha_hora"
-            value={formData.fecha_hora}
+            value={formData.fecha_hora || ''}
             onChange={(e) => setFormData({ ...formData, fecha_hora: e.target.value })}
             placeholder="2026-10-05 09:30"
             required
@@ -246,7 +278,6 @@ export default function AsistenciasPage() {
         </form>
       </Modal>
 
-      {/* Diálogo Eliminación Física RF21 */}
       <ConfirmDialog
         isOpen={confirmDelete.isOpen}
         onClose={() => setConfirmDelete({ isOpen: false, asistencia: null, loading: false })}

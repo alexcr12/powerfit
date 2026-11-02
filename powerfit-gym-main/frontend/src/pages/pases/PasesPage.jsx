@@ -24,7 +24,6 @@ export default function PasesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Modal Emisión de Pase (RF17)
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedSocioId, setSelectedSocioId] = useState('');
   const [nombreInv, setNombreInv] = useState('');
@@ -41,7 +40,15 @@ export default function PasesPage() {
         pasesService.getAll(),
         sociosService.getAll(),
       ]);
-      setPases(pasesData);
+      
+      const pasesNormalizados = pasesData.map(p => ({
+        ...p,
+        nombre_inv: p.nombreInv || p.nombre_inv,
+        fecha_uso: p.fechaUso || p.fecha_uso,
+        socio_id: p.socio?.id || p.socio_id
+      }));
+
+      setPases(pasesNormalizados);
       setSocios(socData);
     } catch {
       setError('Error al consultar pases de invitado.');
@@ -62,7 +69,6 @@ export default function PasesPage() {
     setIsModalOpen(true);
   };
 
-  // Al elegir socio en el modal, evaluar membresía activa, pases previos y límite (R1 y R5)
   const handleSocioSelect = async (socioId) => {
     setSelectedSocioId(socioId);
     if (!socioId) {
@@ -78,8 +84,13 @@ export default function PasesPage() {
         pasesService.getBySocioId(socioId),
       ]);
 
-      // 1. Validar membresía vigente
-      const checkVigencia = validarMembresiaVigente(membresias);
+      const membresiasNormalizadas = membresias.map(m => ({
+        ...m,
+        fecha_inicio: m.fechaInicio || m.fecha_inicio,
+        fecha_fin: m.fechaFin || m.fecha_fin
+      }));
+
+      const checkVigencia = validarMembresiaVigente(membresiasNormalizadas);
 
       if (!checkVigencia.vigente) {
         setEvaluacionPase({
@@ -91,13 +102,10 @@ export default function PasesPage() {
         return;
       }
 
-      // 2. Obtener productos de la membresía activa para calcular R1
       const prodsEnMembresia = await membresiasService.getProductosByMembresiaId(checkVigencia.membresiaActiva.id);
       
-      // 3. Evaluar R1 y R5
       const { limiteTotal, desglose } = calcularLimitePases(prodsEnMembresia, checkVigencia.membresiaActiva.es_primera);
 
-      // 4. Validar si ya superó el límite
       const validacion = validarEmisionPase({
         socio,
         membresiaVigente: checkVigencia.membresiaActiva,
@@ -134,7 +142,6 @@ export default function PasesPage() {
 
     try {
       setSaving(true);
-      // RF17: Registrar pase de invitado
       await pasesService.create({
         socioId: selectedSocioId,
         nombreInv: nombreInv.trim(),
@@ -237,7 +244,6 @@ export default function PasesPage() {
         />
       )}
 
-      {/* Modal Emisión RF17 */}
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -264,7 +270,6 @@ export default function PasesPage() {
             </select>
           </div>
 
-          {/* Tarjeta de Evaluación de Reglas de Negocio R1 y R5 */}
           {evaluating ? (
             <Loader message="Evaluando membresía y límites de pases..." />
           ) : evaluacionPase ? (

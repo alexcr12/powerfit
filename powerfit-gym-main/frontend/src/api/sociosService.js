@@ -4,19 +4,30 @@ export const sociosService = {
   // RF02: Listar socios
   getAll: async () => {
     const res = await api.get('/socios');
-    return res.data;
+    return res.data.map(s => ({
+      ...s,
+      fecha_registro: s.fechaRegistro || s.fecha_registro, 
+       registrado_por: s.registradoPor || s.registrado_por,
+      activo: s.activo ?? false
+    }));
   },
 
   getById: async (id) => {
     const res = await api.get(`/socios/${id}`);
-    return res.data;
+    const s = res.data;
+    return {
+      ...s,
+      fecha_registro: s.fechaRegistro || s.fecha_registro,
+       registrado_por: s.registradoPor || s.registrado_por,
+      activo: s.activo ?? false
+    };
   },
 
   // RF01: Registrar socio
   create: async (socioData) => {
     const payload = {
       ...socioData,
-      fecha_registro: new Date().toISOString().split('T')[0],
+      fechaRegistro: new Date().toISOString().split('T')[0], 
       activo: true,
     };
     const res = await api.post('/socios', payload);
@@ -25,17 +36,20 @@ export const sociosService = {
 
   // RF03: Editar socio
   update: async (id, socioData) => {
-    const res = await api.patch(`/socios/${id}`, socioData);
+    const payload = {
+      ...socioData,
+      fechaRegistro: socioData.fechaRegistro || socioData.fecha_registro // 🔥 camelCase
+    };
+    const res = await api.patch(`/socios/${id}`, payload);
     return res.data;
   },
 
-  // RF04: Desactivar socio (Borrado Lógico - R2)
+  // RF04: Desactivar socio
   deactivate: async (id) => {
     const res = await api.patch(`/socios/${id}`, { activo: false });
     return res.data;
   },
 
-  // Reactivar socio
   reactivate: async (id) => {
     const res = await api.patch(`/socios/${id}`, { activo: true });
     return res.data;

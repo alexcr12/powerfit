@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import api from '../api/axiosInstance';
 import { logger } from '../utils/logger';
 import { ROLES } from '../constants/roles';
@@ -6,12 +6,6 @@ import { ROLES } from '../constants/roles';
 const AuthContext = createContext(null);
 const USER_STORAGE_KEY = 'powerfit_user';
 
-/**
- * Proveedor de Autenticación de PowerFit GYM.
- * Simula el inicio de sesión consultando la tabla de usuarios en json-server.
- * Si las credenciales coinciden, almacena la sesión en localStorage y registra
- * los eventos en el sistema de auditoría.
- */
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
     try {
@@ -25,76 +19,59 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(false);
   const [authError, setAuthError] = useState(null);
 
-  /**
-   * Inicia sesión con email y contraseña contra la API dummy.
-   */
   const login = async (email, password) => {
     setLoading(true);
     setAuthError(null);
 
     try {
-      // Búsqueda del usuario por email en json-server
-      const response = await api.get('/usuarios', {
-        params: { email: email.trim().toLowerCase() },
+      // 🔥 1. Llamamos al backend real (Spring Boot) para obtener el JWT
+      const response = await api.post('/auth/login', { 
+        email: email.trim().toLowerCase(), 
+        password 
       });
 
-      const usuarios = response.data;
-      const foundUser = usuarios.find((u) => u.email.toLowerCase() === email.trim().toLowerCase());
+      const { token, nombre, rol } = response.data;
 
-      if (!foundUser) {
-        const msg = 'El correo electrónico no se encuentra registrado en el sistema.';
-        setAuthError(msg);
-        logger.warn('AUTH_LOGIN', 'Intento de inicio de sesión con email no registrado', { email });
-        return { success: false, message: msg };
-      }
+      // 🔥 2. Guardamos el Token en el localStorage para Axios
+      localStorage.setItem('token', token);
 
-      if (foundUser.password !== password) {
-        const msg = 'Contraseña incorrecta. Verifique sus credenciales.';
-        setAuthError(msg);
-        logger.warn('AUTH_LOGIN', 'Contraseña incorrecta', { email });
-        return { success: false, message: msg };
-      }
-
-      // Sesión exitosa
+      // 3. Armamos la sesión del usuario
       const sessionUser = {
-        id: foundUser.id,
-        nombre: foundUser.nombre,
-        email: foundUser.email,
-        rol: foundUser.rol,
+        nombre,
+        email,
+        rol,
       };
 
       setUser(sessionUser);
       localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(sessionUser));
 
-      logger.info('AUTH_LOGIN', `Sesión iniciada exitosamente por ${sessionUser.nombre} (${sessionUser.rol})`, {
-        userId: sessionUser.id,
-        rol: sessionUser.rol,
-      });
+      logger.info('AUTH_LOGIN', `Sesión iniciada con JWT por ${nombre} (${rol})`);
 
       return { success: true, user: sessionUser };
+
     } catch (err) {
-      const errorMsg = 'Error al conectar con el servidor de autenticación. ¿Está corriendo json-server?';
+      const errorMsg = err.response?.data?.mensaje || 'Credenciales incorrectas o error de conexión.';
       setAuthError(errorMsg);
-      logger.error('AUTH_LOGIN', 'Fallo de conexión en inicio de sesión', { error: err.message });
+      logger.warn('AUTH_LOGIN', 'Intento de login fallido', { email, error: errorMsg });
       return { success: false, message: errorMsg };
     } finally {
       setLoading(false);
     }
   };
 
-  /**
-   * Cierra la sesión activa y limpia localStorage.
-   */
   const logout = () => {
     if (user) {
-      logger.info('AUTH_LOGOUT', `Cierre de sesión de ${user.nombre}`, { userId: user.id });
+      logger.info('AUTH_LOGOUT', `Cierre de sesión de ${user.nombre}`);
     }
     setUser(null);
+    // 🔥 Limpiamos TODOS los datos de sesión, incluyendo el Token
     localStorage.removeItem(USER_STORAGE_KEY);
+    localStorage.removeItem('token');
   };
 
-  const isAdmin = user?.rol === ROLES.ADMIN;
-  const isStaff = user?.rol === ROLES.STAFF;
+  // Verificamos el rol (asegúrate de que en tu archivo roles.js estén en mayúsculas: 'ADMIN', 'STAFF')
+  const isAdmin = user?.rol?.toUpperCase() === (ROLES.ADMIN || 'ADMIN');
+  const isStaff = user?.rol?.toUpperCase() === (ROLES.STAFF || 'STAFF');
   const isAuthenticated = !!user;
 
   return (

@@ -53,7 +53,7 @@ export default function NuevaAsistenciaPage() {
   }, [addToast]);
 
   // Validación de vigencia (RF18 Macro)
-  const handleCheckSocio = async (socio) => {
+    const handleCheckSocio = async (socio) => {
     if (!socio) return;
     setSelectedSocio(socio);
     setValidating(true);
@@ -71,22 +71,34 @@ export default function NuevaAsistenciaPage() {
 
       // Consultar membresías del socio
       const membresias = await membresiasService.getBySocioId(socio.id);
-      const res = validarMembresiaVigente(membresias);
+      
+      // 🔥 Normalizamos para que no haya errores de snake_case vs camelCase
+      const membresiasNormalizadas = membresias.map(m => ({
+        ...m,
+        fecha_inicio: m.fechaInicio || m.fecha_inicio,
+        fecha_fin: m.fechaFin || m.fecha_fin,
+        monto_total: m.montoTotal || m.monto_total
+      }));
 
+      const res = validarMembresiaVigente(membresiasNormalizadas);
+      
       if (res.vigente) {
+        console.log("✅ ACCESO AUTORIZADO PARA:", socio.nombre); // 👈 Para que veas que sí entra aquí
         setValidationResult({
           permitido: true,
-          razon: `Membresía activa vigente hasta el ${res.membresiaActiva.fecha_fin}.`,
+          razon: `Membresía activa vigente.`, // 👈 Quitamos la variable que causaba undefined
           membresia: res.membresiaActiva,
         });
       } else {
+        console.log("❌ ACCESO DENEGADO PARA:", socio.nombre);
         setValidationResult({
           permitido: false,
           razon: 'Acceso Denegado: El socio no cuenta con ninguna membresía activa y vigente a la fecha.',
           membresia: null,
         });
       }
-    } catch {
+    } catch (error) {
+      console.error("Error validando:", error);
       setValidationResult({
         permitido: false,
         razon: 'Error al verificar membresías con la API.',
@@ -96,7 +108,7 @@ export default function NuevaAsistenciaPage() {
       setValidating(false);
     }
   };
-
+  
   const handleSearchByDoc = (e) => {
     e.preventDefault();
     if (!searchDoc.trim()) return;

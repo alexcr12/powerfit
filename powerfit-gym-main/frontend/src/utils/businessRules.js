@@ -139,27 +139,31 @@ export function evaluarPrimeraMembresia(membresiasSocio = []) {
  * }}
  */
 export function validarMembresiaVigente(membresiasSocio = [], fechaReferencia = null) {
-  const hoyStr = fechaReferencia || new Date().toISOString().split('T')[0];
+  const hoy = new Date();
+  const hoyLocalStr = `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(hoy.getDate()).padStart(2, '0')}`;
+  const hoyStr = fechaReferencia || hoyLocalStr;
+
+  console.log("🕵️‍♂️ VALIDANDO FECHAS - Hoy es:", hoyStr);
 
   const membresiaActiva = membresiasSocio.find((m) => {
-    return m.estado === 'activa' && m.fecha_fin >= hoyStr;
+    const estado = (m.estado || '').toLowerCase().trim();
+    
+    // Cortamos cualquier hora o zona horaria. Dejamos solo YYYY-MM-DD
+    const fFinRaw = m.fechaFin || m.fecha_fin || '';
+    const fFin = String(fFinRaw).substring(0, 10); 
+
+    console.log(`   -> Membresía ID ${m.id} | Estado: "${estado}" | FechaFin: "${fFin}"`);
+
+    // Solo validamos que esté ACTIVA y que hoy sea menor o igual a la fecha de fin
+    return estado === 'activa' && hoyStr <= fFin;
   });
 
   if (membresiaActiva) {
-    return {
-      vigente: true,
-      membresiaActiva,
-      mensaje: `Membresía activa vigente hasta el ${membresiaActiva.fecha_fin}.`,
-    };
+    return { vigente: true, membresiaActiva, mensaje: 'Membresía activa vigente.' };
   }
 
-  return {
-    vigente: false,
-    membresiaActiva: null,
-    mensaje: 'El socio no cuenta con ninguna membresía activa y vigente a la fecha.',
-  };
+  return { vigente: false, membresiaActiva: null, mensaje: 'El socio no cuenta con ninguna membresía activa y vigente a la fecha.' };
 }
-
 /**
  * Validación de Emisión de Pase de Invitado
  * ----------------------------------------------------------------------------

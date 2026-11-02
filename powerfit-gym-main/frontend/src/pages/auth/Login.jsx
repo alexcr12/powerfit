@@ -138,17 +138,18 @@ export default function Login() {
               Credenciales de prueba para la sustentación
             </p>
             <div className="grid grid-cols-2 gap-2">
-              <button
+                            <button
                 type="button"
-                onClick={() => fillCredentials('admin@powerfit.com', 'admin')}
+                onClick={() => fillCredentials('admin@powerfit.com', 'admin123')}
                 className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg bg-slate-800/80 hover:bg-slate-800 border border-slate-700 text-xs text-slate-200 transition-colors cursor-pointer"
               >
                 <ShieldCheck size={14} className="text-emerald-400" />
                 <span>Admin</span>
               </button>
+              
               <button
                 type="button"
-                onClick={() => fillCredentials('staff@powerfit.com', 'staff')}
+                onClick={() => fillCredentials('staff@powerfit.com', 'staff123')}
                 className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg bg-slate-800/80 hover:bg-slate-800 border border-slate-700 text-xs text-slate-200 transition-colors cursor-pointer"
               >
                 <UserCheck size={14} className="text-blue-400" />

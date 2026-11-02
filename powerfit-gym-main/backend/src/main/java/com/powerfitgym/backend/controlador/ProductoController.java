@@ -1,12 +1,15 @@
 package com.powerfitgym.backend.controlador;
 
+import com.powerfitgym.backend.entidad.Categoria;
 import com.powerfitgym.backend.entidad.Producto;
 import com.powerfitgym.backend.servicio.ProductoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/productos")
@@ -23,11 +26,11 @@ public class ProductoController {
     public ResponseEntity<List<Producto>> listar(
             @RequestParam(required = false, name = "categoria_id") Long categoriaId,
             @RequestParam(required = false) Boolean activo) {
-        
+
         if (categoriaId != null) {
             return ResponseEntity.ok(productoService.listarPorCategoria(categoriaId));
         }
-        if (Boolean.TRUE.equals(activo)) {
+        if (activo != null && activo) {
             return ResponseEntity.ok(productoService.listarActivos());
         }
         return ResponseEntity.ok(productoService.listarTodos());
@@ -39,13 +42,52 @@ public class ProductoController {
     }
 
     @PostMapping
-    public ResponseEntity<Producto> crear(@RequestBody Producto producto) {
+    public ResponseEntity<Producto> crear(@RequestBody Map<String, Object> body) {
+        System.out.println("=== BODY PRODUCTO: " + body);
+
+        Producto producto = new Producto();
+        producto.setNombre(body.get("nombre").toString());
+        producto.setSede(body.get("sede").toString());
+        producto.setPrecioBase(new BigDecimal(body.get("precio_base").toString()));
+
+        Object activo = body.get("activo");
+        producto.setActivo(activo == null || Boolean.parseBoolean(activo.toString()));
+
+        Object catIdObj = body.get("categoria_id") != null ? body.get("categoria_id") : body.get("categoriaId");
+        if (catIdObj != null) {
+            Categoria catRef = new Categoria();
+            catRef.setId(Long.valueOf(catIdObj.toString()));
+            producto.setCategoria(catRef);
+        }
+
         return new ResponseEntity<>(productoService.crear(producto), HttpStatus.CREATED);
     }
 
+    // 🔥 SOLO HAY UN PATCH AQUÍ
     @PatchMapping("/{id}")
-    public ResponseEntity<Producto> actualizar(@PathVariable Long id, @RequestBody Producto producto) {
-        return ResponseEntity.ok(productoService.actualizar(id, producto));
+    public ResponseEntity<Producto> actualizar(@PathVariable Long id, @RequestBody Map<String, Object> body) {
+        System.out.println("=== PATCH PRODUCTO ID " + id + " BODY: " + body);
+
+        Producto datos = new Producto();
+        if (body.get("nombre") != null)
+            datos.setNombre(body.get("nombre").toString());
+        if (body.get("sede") != null)
+            datos.setSede(body.get("sede").toString());
+        if (body.get("precio_base") != null)
+            datos.setPrecioBase(new BigDecimal(body.get("precio_base").toString()));
+        if (body.get("precioBase") != null)
+            datos.setPrecioBase(new BigDecimal(body.get("precioBase").toString()));
+        if (body.get("activo") != null)
+            datos.setActivo(Boolean.parseBoolean(body.get("activo").toString()));
+
+        Object catIdObj = body.get("categoria_id") != null ? body.get("categoria_id") : body.get("categoriaId");
+        if (catIdObj != null) {
+            Categoria catRef = new Categoria();
+            catRef.setId(Long.valueOf(catIdObj.toString()));
+            datos.setCategoria(catRef);
+        }
+
+        return ResponseEntity.ok(productoService.actualizar(id, datos));
     }
 
     @DeleteMapping("/{id}")

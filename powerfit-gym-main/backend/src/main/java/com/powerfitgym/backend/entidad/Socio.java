@@ -3,6 +3,10 @@ package com.powerfitgym.backend.entidad;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "socios")
@@ -33,4 +37,15 @@ public class Socio {
 
     @Column(nullable = false)
     private Boolean activo = true;
+    @OneToMany(mappedBy = "socio", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore // Para que no entre en un bucle infinito al pedir los datos
+    private List<Membresia> membresias = new ArrayList<>();
+
+    @OneToMany(mappedBy = "socio", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Asistencia> asistencias = new ArrayList<>();
+
+    @OneToMany(mappedBy = "socio", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<PaseInvitado> pasesInvitado = new ArrayList<>();
 }

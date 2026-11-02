@@ -1,6 +1,10 @@
 import api from './axiosInstance';
 
 export const usuariosService = {
+    login: async (email, password) => {
+    const res = await api.post('/auth/login', { email, password });
+    return res.data; // { token, nombre, rol }
+  },
   // Listar usuarios
   getAll: async () => {
     const res = await api.get('/usuarios');

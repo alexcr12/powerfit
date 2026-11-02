@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { CreditCard, Plus, Eye, Ban, Calendar, Gift } from 'lucide-react';
+import { CreditCard, Plus, Eye, Ban, Calendar, Gift, Trash2 } from 'lucide-react';
 import { membresiasService } from '../../api/membresiasService';
 import { sociosService } from '../../api/sociosService';
 import { productosService } from '../../api/productosService';
@@ -21,7 +21,13 @@ export default function MembresiasPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Modal Detalle
+  // --- ESTADOS DE MODALES ---
+  const [confirmDelete, setConfirmDelete] = useState({
+    isOpen: false,
+    membresia: null,
+    loading: false,
+  });
+
   const [detailModal, setDetailModal] = useState({
     isOpen: false,
     membresia: null,
@@ -29,13 +35,13 @@ export default function MembresiasPage() {
     loading: false,
   });
 
-  // Confirm dialog para cancelación lógica RF16
   const [confirmCancel, setConfirmCancel] = useState({
     isOpen: false,
     membresia: null,
     loading: false,
   });
 
+  // --- FUNCIONES ---
   const loadData = async () => {
     try {
       setLoading(true);
@@ -76,7 +82,6 @@ export default function MembresiasPage() {
 
     try {
       setConfirmCancel((prev) => ({ ...prev, loading: true }));
-      // RF16: Cancelar membresía (ocultamiento / cancelación lógica)
       await membresiasService.cancel(mem.id);
       addToast(`Membresía #${mem.id} cancelada correctamente.`, 'warning');
       setConfirmCancel({ isOpen: false, membresia: null, loading: false });
@@ -84,6 +89,24 @@ export default function MembresiasPage() {
     } catch {
       addToast('Error al cancelar la membresía.', 'error');
       setConfirmCancel((prev) => ({ ...prev, loading: false }));
+    }
+  };
+
+    const handleConfirmDelete = async () => {
+    const mem = confirmDelete.membresia;
+    if (!mem) return;
+
+    try {
+      setConfirmDelete((prev) => ({ ...prev, loading: true }));
+      await membresiasService.delete(mem.id);
+      addToast(`Membresía #${mem.id} eliminada permanentemente.`, 'success');
+      setConfirmDelete({ isOpen: false, membresia: null, loading: false });
+      loadData(); 
+    } catch (error) {
+      console.error("🚨 ERROR AL BORRAR:", error.response?.data || error);
+      const errorMsg = error.response?.data?.mensaje || error.response?.data?.message || 'Error al eliminar la membresía.';
+      addToast(errorMsg, 'error');
+      setConfirmDelete((prev) => ({ ...prev, loading: false }));
     }
   };
 
@@ -101,15 +124,16 @@ export default function MembresiasPage() {
       header: 'Socio Titular',
       accessor: 'socio_id',
       render: (m) => {
-        const s = sociosMap[m.socio_id];
+        const socioId = m.socio?.id ?? m.socioId ?? m.socio_id;
+        const s = m.socio ?? (socioId ? sociosMap[socioId] : null);
         return (
           <div>
             <span className="font-semibold text-white block">
-              {s ? s.nombre : `Socio #${m.socio_id}`}
+              {s ? s.nombre : (socioId ? `Socio #${socioId}` : 'Socio no asignado')}
             </span>
             <span className="text-[11px] text-slate-400">
               {s ? `Doc: ${s.documento}` : ''}
-              {!s?.activo && <span className="text-red-400 ml-1">(Inactivo R2)</span>}
+              {s && !s.activo && <span className="text-red-400 ml-1">(Inactivo R2)</span>}
             </span>
           </div>
         );
@@ -118,42 +142,59 @@ export default function MembresiasPage() {
     {
       header: 'Periodo Vigencia',
       accessor: 'fecha_inicio',
-      render: (m) => (
-        <div className="text-xs">
-          <span className="text-slate-300 block">{formatDate(m.fecha_inicio)} al {formatDate(m.fecha_fin)}</span>
-          <span className="text-[10px] text-slate-500 font-mono">1 Mes Calendario</span>
-        </div>
-      ),
+      render: (m) => {
+        const fInicio = m.fechaInicio ?? m.fecha_inicio;
+        const fFin = m.fechaFin ?? m.fecha_fin;
+        return (
+          <div className="text-xs">
+            <span className="text-slate-300 block">
+              {formatDate(fInicio)} al {formatDate(fFin)}
+            </span>
+            <span className="text-[10px] text-slate-500 font-mono">1 Mes Calendario</span>
+          </div>
+        );
+      },
     },
     {
       header: 'Monto Total',
       accessor: 'monto_total',
-      render: (m) => (
-        <span className="font-mono font-bold text-emerald-400">
-          {formatCurrency(m.monto_total)}
-        </span>
-      ),
+      render: (m) => {
+        const monto = m.montoTotal ?? m.monto_total ?? 0;
+        return (
+          <span className="font-mono font-bold text-emerald-400">
+            {formatCurrency(monto)}
+          </span>
+        );
+      },
     },
     {
       header: 'Tipo',
       accessor: 'es_primera',
-      render: (m) => (
-        m.es_primera ? (
+      render: (m) => {
+        const esPrimera = m.esPrimera ?? m.es_primera;
+        return esPrimera ? (
           <span className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-400 border border-purple-500/20">
             <Gift size={11} />
             1ra Vez (R5)
           </span>
         ) : (
           <span className="text-[10px] text-slate-500 uppercase font-medium">Renovación</span>
-        )
-      ),
+        );
+      },
     },
     {
       header: 'Estado',
       accessor: 'estado',
       render: (m) => {
-        const isActiva = m.estado === 'activa';
-        const isCancelada = m.estado === 'cancelada';
+        const estadoNorm = (m.estado || '').toLowerCase();
+        const isActiva = estadoNorm === 'activa';
+        const isCancelada = estadoNorm === 'cancelada';
+        const isVencida = estadoNorm === 'vencida';
+
+        isActiva ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
+isVencida ? 'bg-orange-500/10 text-orange-400 border border-orange-500/20' :
+isCancelada ? 'bg-slate-800 text-slate-400 border border-slate-700' :
+'bg-amber-500/10 text-amber-400 border border-amber-500/20'
 
         return (
           <span
@@ -216,12 +257,19 @@ export default function MembresiasPage() {
               {m.estado === 'activa' && (
                 <button
                   onClick={() => setConfirmCancel({ isOpen: true, membresia: m, loading: false })}
-                  className="p-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 transition-colors cursor-pointer"
+                  className="p-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/20 transition-colors cursor-pointer"
                   title="Cancelar membresía (RF16)"
                 >
                   <Ban size={14} />
                 </button>
               )}
+               <button
+                onClick={() => setConfirmDelete({ isOpen: true, membresia: m, loading: false })}
+                className="p-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/20 transition-colors cursor-pointer"
+                title="Eliminar membresía (RF21)"
+              >
+                <Trash2 size={14} />
+              </button>
             </div>
           )}
         />
@@ -239,13 +287,19 @@ export default function MembresiasPage() {
             <div>
               <span className="text-slate-400 block">Socio:</span>
               <strong className="text-white">
-                {sociosMap[detailModal.membresia?.socio_id]?.nombre || `ID ${detailModal.membresia?.socio_id}`}
+                {(() => {
+                  const socioId = detailModal.membresia?.socio?.id ?? detailModal.membresia?.socio_id;
+                  const socio = sociosMap[socioId];
+                  return socio?.nombre || `ID ${socioId ?? 'desconocido'}`;
+                })()}
               </strong>
             </div>
             <div className="text-right">
               <span className="text-slate-400 block">Total Pagado:</span>
               <strong className="text-emerald-400 font-mono text-sm">
-                {formatCurrency(detailModal.membresia?.monto_total)}
+                {formatCurrency(
+                  detailModal.membresia?.montoTotal ?? detailModal.membresia?.monto_total ?? 0
+                )}
               </strong>
             </div>
           </div>
@@ -261,17 +315,20 @@ export default function MembresiasPage() {
           ) : (
             <div className="divide-y divide-slate-800 border border-slate-800 rounded-2xl overflow-hidden bg-slate-950">
               {detailModal.items.map((item) => {
-                const prod = productosMap[item.producto_id];
+                const prodId = item.producto?.id ?? item.producto_id;
+                const prod = productosMap[prodId];
+                const precio = item.precioUnitario ?? item.precio_unitario ?? 0;
+
                 return (
                   <div key={item.id} className="p-3 flex justify-between items-center text-xs">
                     <div>
                       <span className="font-semibold text-slate-200 block">
-                        {prod ? prod.nombre : `Producto #${item.producto_id}`}
+                        {prod ? prod.nombre : `Producto #${prodId ?? 'desconocido'}`}
                       </span>
                       <span className="text-[10px] text-slate-500">{prod?.sede}</span>
                     </div>
                     <span className="font-mono text-slate-300">
-                      {formatCurrency(item.precio_unitario)}
+                      {formatCurrency(precio)}
                     </span>
                   </div>
                 );
@@ -290,6 +347,17 @@ export default function MembresiasPage() {
         message={`¿Desea cancelar la Membresía #${confirmCancel.membresia?.id}? El estado pasará a "cancelada" y el socio no podrá acceder a las instalaciones bajo esta suscripción.`}
         confirmText="Confirmar Cancelación"
         loading={confirmCancel.loading}
+      />
+
+      
+      <ConfirmDialog
+        isOpen={confirmDelete.isOpen}
+        onClose={() => setConfirmDelete({ isOpen: false, membresia: null, loading: false })}
+        onConfirm={handleConfirmDelete}
+        title="¿Eliminar Membresía?"
+        message={`¿Está seguro de eliminar permanentemente la Membresía #${confirmDelete.membresia?.id}? Esta acción borrará el registro de la base de datos y no se podrá deshacer.`}
+        confirmText="Sí, eliminar"
+        loading={confirmDelete.loading}
       />
     </div>
   );

@@ -11,13 +11,17 @@ import {
   UserCog,
   FileText,
   Dumbbell,
-  X
+  X,
+  Sun,
+  Moon
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 import { ROLES } from '../../constants/roles';
 
 export default function Sidebar({ isOpen, onClose }) {
   const { user } = useAuth();
+  const { isDark, setIsDark } = useTheme(); 
   const isAdmin = user?.rol === ROLES.ADMIN;
 
   const baseNavLinks = [
@@ -35,11 +39,11 @@ export default function Sidebar({ isOpen, onClose }) {
     { to: '/logs', label: 'Auditoría / Logs', icon: FileText, badge: 'Admin' },
   ];
 
-  const navItemClass = ({ isActive }) =>
+   const navItemClass = ({ isActive }) =>
     `flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all cursor-pointer ${
       isActive
         ? 'bg-emerald-600 text-white font-semibold shadow-lg shadow-emerald-900/30'
-        : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/70'
+        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-800/70'
     }`;
 
   return (
@@ -52,7 +56,7 @@ export default function Sidebar({ isOpen, onClose }) {
       )}
 
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-50 w-64 bg-slate-900 border-r border-slate-800 flex flex-col transition-transform duration-300 ease-in-out lg:translate-x-0 ${
+        className={`fixed top-0 bottom-0 left-0 z-50 w-64 bg-slate-900 dark:bg-slate-900 border-r border-slate-800 flex flex-col transition-transform duration-300 ease-in-out lg:translate-x-0 ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
@@ -145,6 +149,19 @@ export default function Sidebar({ isOpen, onClose }) {
               Operaciones de atención a socios, membresías y control de acceso activas.
             </div>
           )}
+        </div>
+
+        {/* BOTÓN DE MODO CLARO/OSCURO */}
+                <div className="px-3.5 pb-2 shrink-0">
+          <button
+            onClick={() => setIsDark(!isDark)}
+            className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-800/70 transition-all cursor-pointer"
+          >
+            <div className="flex items-center gap-3">
+              {isDark ? <Sun size={17} /> : <Moon size={17} />}
+              <span>{isDark ? 'Modo Claro' : 'Modo Oscuro'}</span>
+            </div>
+          </button>
         </div>
 
         <div className="p-3.5 border-t border-slate-800 bg-slate-950/40 shrink-0">

@@ -1,7 +1,6 @@
 import api from './axiosInstance';
 
 export const membresiasService = {
-  // RF15: Listar historial general o por socio
   getAll: async () => {
     const res = await api.get('/membresias');
     return res.data;
@@ -19,7 +18,6 @@ export const membresiasService = {
     return res.data;
   },
 
-  // Obtener productos contratados en una membresía
   getProductosByMembresiaId: async (membresiaId) => {
     const res = await api.get('/membresia_producto', {
       params: { membresia_id: Number(membresiaId) },
@@ -42,23 +40,48 @@ export const membresiasService = {
     const resMembresia = await api.post('/membresias', membresiaPayload);
     const nuevaMembresia = resMembresia.data;
 
-    // 2. Registrar los productos asociados en membresia_producto
-    const promesasProductos = productos.map((prod) =>
-      api.post('/membresia_producto', {
-        membresia_id: nuevaMembresia.id,
-        producto_id: prod.id,
-        precio_unitario: prod.precio_base,
+    // 🔍 LOG CLAVE: ver qué devuelve el backend
+    console.log('🔍 MEMBRESÍA CREADA:', JSON.stringify(nuevaMembresia, null, 2));
+
+    // 2. Buscar el ID en cualquiera de sus posibles nombres/ubicaciones
+    const idMembresia =
+      nuevaMembresia?.id ??
+      nuevaMembresia?.idMembresia ??
+      nuevaMembresia?.membresiaId ??
+      nuevaMembresia?.membresia?.id;
+
+    if (!idMembresia) {
+      console.error('❌ No se encontró ID en la respuesta:', nuevaMembresia);
+      throw new Error(
+        'El backend no devolvió el ID de la membresía. Revisa el log 🔍 MEMBRESÍA CREADA.'
+      );
+    }
+
+    console.log('✅ ID de membresía a usar:', idMembresia);
+
+    // 3. Registrar los productos asociados
+    const promesasProductos = productos.map((prod) => {
+      const payloadProducto = {
+        membresia_id: Number(idMembresia),
+        producto_id: Number(prod.id),
+        precio_unitario: Number(prod.precio_base ?? prod.precioBase ?? 0),
         cantidad_disponible: 1,
-      })
-    );
+      };
+      console.log('📦 PAYLOAD PRODUCTO:', JSON.stringify(payloadProducto, null, 2));
+      return api.post('/membresia_producto', payloadProducto);
+    });
+
     await Promise.all(promesasProductos);
 
     return nuevaMembresia;
   },
 
-  // RF16: Cancelar membresía (ocultamiento / cancelación lógica)
   cancel: async (id) => {
     const res = await api.patch(`/membresias/${id}`, { estado: 'cancelada' });
+    return res.data;
+  },
+    delete: async (id) => {
+    const res = await api.delete(`/membresias/${id}`);
     return res.data;
   },
 };
