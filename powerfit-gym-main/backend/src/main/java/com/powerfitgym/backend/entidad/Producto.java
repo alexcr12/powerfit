@@ -1,5 +1,6 @@
 package com.powerfitgym.backend.entidad;
 
+import com.fasterxml.jackson.annotation.JsonIgnore; // 🔥 IMPORTANTE
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
@@ -18,6 +19,7 @@ public class Producto {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "categoria_id", nullable = false)
+    @JsonIgnore // 🔥 ESTO ES LO QUE FALTA PARA EVITAR EL BUCLE
     private Categoria categoria;
 
     @Column(nullable = false, length = 150)

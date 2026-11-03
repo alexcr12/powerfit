@@ -14,9 +14,11 @@ public class CategoriaService {
     public CategoriaService(CategoriaRepository categoriaRepository) {
         this.categoriaRepository = categoriaRepository;
     }
+
     public List<Categoria> listarTodas() {
         return categoriaRepository.findAll();
     }
+
     public List<Categoria> listarActivas() {
         return categoriaRepository.findByActivoTrue();
     }
@@ -32,8 +34,19 @@ public class CategoriaService {
 
     public Categoria actualizar(Long id, Categoria datosActualizados) {
         Categoria categoria = buscarPorId(id);
-        if (datosActualizados.getNombre() != null) categoria.setNombre(datosActualizados.getNombre());
-        if (datosActualizados.getActivo() != null) categoria.setActivo(datosActualizados.getActivo());
+
+        if (datosActualizados.getNombre() != null)
+            categoria.setNombre(datosActualizados.getNombre());
+
+        if (datosActualizados.getActivo() != null)
+            categoria.setActivo(datosActualizados.getActivo());
+
+        // 🔥 ESTO ES LO QUE FALTABA: Actualizar los productos base si vienen en los
+        // datos
+        if (datosActualizados.getBeneficiosBase() != null) {
+            categoria.setBeneficiosBase(datosActualizados.getBeneficiosBase());
+        }
+
         return categoriaRepository.save(categoria);
     }
 

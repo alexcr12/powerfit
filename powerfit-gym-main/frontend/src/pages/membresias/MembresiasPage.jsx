@@ -21,27 +21,10 @@ export default function MembresiasPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // --- ESTADOS DE MODALES ---
-  const [confirmDelete, setConfirmDelete] = useState({
-    isOpen: false,
-    membresia: null,
-    loading: false,
-  });
+  const [confirmDelete, setConfirmDelete] = useState({ isOpen: false, membresia: null, loading: false });
+  const [detailModal, setDetailModal] = useState({ isOpen: false, membresia: null, items: [], loading: false });
+  const [confirmCancel, setConfirmCancel] = useState({ isOpen: false, membresia: null, loading: false });
 
-  const [detailModal, setDetailModal] = useState({
-    isOpen: false,
-    membresia: null,
-    items: [],
-    loading: false,
-  });
-
-  const [confirmCancel, setConfirmCancel] = useState({
-    isOpen: false,
-    membresia: null,
-    loading: false,
-  });
-
-  // --- FUNCIONES ---
   const loadData = async () => {
     try {
       setLoading(true);
@@ -92,7 +75,7 @@ export default function MembresiasPage() {
     }
   };
 
-    const handleConfirmDelete = async () => {
+  const handleConfirmDelete = async () => {
     const mem = confirmDelete.membresia;
     if (!mem) return;
 
@@ -101,7 +84,7 @@ export default function MembresiasPage() {
       await membresiasService.delete(mem.id);
       addToast(`Membresía #${mem.id} eliminada permanentemente.`, 'success');
       setConfirmDelete({ isOpen: false, membresia: null, loading: false });
-      loadData(); 
+      loadData();
     } catch (error) {
       console.error("🚨 ERROR AL BORRAR:", error.response?.data || error);
       const errorMsg = error.response?.data?.mensaje || error.response?.data?.message || 'Error al eliminar la membresía.';
@@ -118,7 +101,7 @@ export default function MembresiasPage() {
       header: 'ID',
       accessor: 'id',
       cellClass: 'font-mono text-slate-500 w-16',
-      render: (m) => <span className="font-mono text-slate-400">#{m.id}</span>,
+      render: (m) => <span className="font-mono text-slate-500 dark:text-slate-400">#{m.id}</span>,
     },
     {
       header: 'Socio Titular',
@@ -128,12 +111,12 @@ export default function MembresiasPage() {
         const s = m.socio ?? (socioId ? sociosMap[socioId] : null);
         return (
           <div>
-            <span className="font-semibold text-white block">
+            <span className="font-semibold text-slate-800 dark:text-white block">
               {s ? s.nombre : (socioId ? `Socio #${socioId}` : 'Socio no asignado')}
             </span>
-            <span className="text-[11px] text-slate-400">
+            <span className="text-[11px] text-slate-500 dark:text-slate-400">
               {s ? `Doc: ${s.documento}` : ''}
-              {s && !s.activo && <span className="text-red-400 ml-1">(Inactivo R2)</span>}
+              {s && !s.activo && <span className="text-red-500 dark:text-red-400 ml-1">(Inactivo R2)</span>}
             </span>
           </div>
         );
@@ -147,10 +130,10 @@ export default function MembresiasPage() {
         const fFin = m.fechaFin ?? m.fecha_fin;
         return (
           <div className="text-xs">
-            <span className="text-slate-300 block">
+            <span className="text-slate-600 dark:text-slate-300 block">
               {formatDate(fInicio)} al {formatDate(fFin)}
             </span>
-            <span className="text-[10px] text-slate-500 font-mono">1 Mes Calendario</span>
+            <span className="text-[10px] text-slate-400 dark:text-slate-500 font-mono">1 Mes Calendario</span>
           </div>
         );
       },
@@ -161,7 +144,7 @@ export default function MembresiasPage() {
       render: (m) => {
         const monto = m.montoTotal ?? m.monto_total ?? 0;
         return (
-          <span className="font-mono font-bold text-emerald-400">
+          <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">
             {formatCurrency(monto)}
           </span>
         );
@@ -173,12 +156,12 @@ export default function MembresiasPage() {
       render: (m) => {
         const esPrimera = m.esPrimera ?? m.es_primera;
         return esPrimera ? (
-          <span className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-400 border border-purple-500/20">
+          <span className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400 border border-purple-200 dark:border-purple-500/20">
             <Gift size={11} />
             1ra Vez (R5)
           </span>
         ) : (
-          <span className="text-[10px] text-slate-500 uppercase font-medium">Renovación</span>
+          <span className="text-[10px] text-slate-500 dark:text-slate-500 uppercase font-medium">Renovación</span>
         );
       },
     },
@@ -191,19 +174,16 @@ export default function MembresiasPage() {
         const isCancelada = estadoNorm === 'cancelada';
         const isVencida = estadoNorm === 'vencida';
 
-        isActiva ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
-isVencida ? 'bg-orange-500/10 text-orange-400 border border-orange-500/20' :
-isCancelada ? 'bg-slate-800 text-slate-400 border border-slate-700' :
-'bg-amber-500/10 text-amber-400 border border-amber-500/20'
-
         return (
           <span
             className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider ${
               isActiva
-                ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                ? 'bg-emerald-100 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20'
+                : isVencida
+                ? 'bg-orange-100 dark:bg-orange-500/10 text-orange-700 dark:text-orange-400 border border-orange-200 dark:border-orange-500/20'
                 : isCancelada
-                ? 'bg-slate-800 text-slate-400 border border-slate-700'
-                : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+                ? 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-300 dark:border-slate-700'
+                : 'bg-amber-100 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-500/20'
             }`}
           >
             {m.estado}
@@ -218,12 +198,12 @@ isCancelada ? 'bg-slate-800 text-slate-400 border border-slate-700' :
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-extrabold text-white tracking-tight">Historial de Membresías</h1>
-            <span className="text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full font-medium">
+            <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">Historial de Membresías</h1>
+            <span className="text-xs bg-emerald-100 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20 px-2 py-0.5 rounded-full font-medium">
               RF15–RF16
             </span>
           </div>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
             Consulta de suscripciones mensuales, detalle de servicios y cancelación lógica.
           </p>
         </div>
@@ -249,7 +229,7 @@ isCancelada ? 'bg-slate-800 text-slate-400 border border-slate-700' :
             <div className="flex items-center justify-end gap-1.5">
               <button
                 onClick={() => handleOpenDetail(m)}
-                className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors cursor-pointer"
+                className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white transition-colors cursor-pointer"
                 title="Ver servicios contratados"
               >
                 <Eye size={14} />
@@ -257,7 +237,7 @@ isCancelada ? 'bg-slate-800 text-slate-400 border border-slate-700' :
               {m.estado === 'activa' && (
                 <button
                   onClick={() => setConfirmCancel({ isOpen: true, membresia: m, loading: false })}
-                  className="p-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/20 transition-colors cursor-pointer"
+                  className="p-1.5 rounded-lg bg-amber-100 hover:bg-amber-200 dark:bg-amber-500/10 dark:hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-500/20 transition-colors cursor-pointer"
                   title="Cancelar membresía (RF16)"
                 >
                   <Ban size={14} />
@@ -265,7 +245,7 @@ isCancelada ? 'bg-slate-800 text-slate-400 border border-slate-700' :
               )}
                <button
                 onClick={() => setConfirmDelete({ isOpen: true, membresia: m, loading: false })}
-                className="p-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/20 transition-colors cursor-pointer"
+                className="p-1.5 rounded-lg bg-red-100 hover:bg-red-200 dark:bg-red-500/10 dark:hover:bg-red-500/20 text-red-600 dark:text-red-500 border border-red-200 dark:border-red-500/20 transition-colors cursor-pointer"
                 title="Eliminar membresía (RF21)"
               >
                 <Trash2 size={14} />
@@ -275,7 +255,6 @@ isCancelada ? 'bg-slate-800 text-slate-400 border border-slate-700' :
         />
       )}
 
-      {/* Modal Detalle de Productos en Membresía */}
       <Modal
         isOpen={detailModal.isOpen}
         onClose={() => setDetailModal({ isOpen: false, membresia: null, items: [], loading: false })}
@@ -283,10 +262,10 @@ isCancelada ? 'bg-slate-800 text-slate-400 border border-slate-700' :
         subtitle="Servicios individuales incluidos en esta suscripción mensual"
       >
         <div className="space-y-4">
-          <div className="p-3.5 rounded-2xl bg-slate-950 border border-slate-800 text-xs flex justify-between items-center">
+          <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs flex justify-between items-center">
             <div>
-              <span className="text-slate-400 block">Socio:</span>
-              <strong className="text-white">
+              <span className="text-slate-500 dark:text-slate-400 block">Socio:</span>
+              <strong className="text-slate-800 dark:text-white">
                 {(() => {
                   const socioId = detailModal.membresia?.socio?.id ?? detailModal.membresia?.socio_id;
                   const socio = sociosMap[socioId];
@@ -295,8 +274,8 @@ isCancelada ? 'bg-slate-800 text-slate-400 border border-slate-700' :
               </strong>
             </div>
             <div className="text-right">
-              <span className="text-slate-400 block">Total Pagado:</span>
-              <strong className="text-emerald-400 font-mono text-sm">
+              <span className="text-slate-500 dark:text-slate-400 block">Total Pagado:</span>
+              <strong className="text-emerald-600 dark:text-emerald-400 font-mono text-sm">
                 {formatCurrency(
                   detailModal.membresia?.montoTotal ?? detailModal.membresia?.monto_total ?? 0
                 )}
@@ -304,7 +283,7 @@ isCancelada ? 'bg-slate-800 text-slate-400 border border-slate-700' :
             </div>
           </div>
 
-          <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider">
+          <h4 className="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider">
             Productos / Servicios Contratados:
           </h4>
 
@@ -313,7 +292,7 @@ isCancelada ? 'bg-slate-800 text-slate-400 border border-slate-700' :
           ) : detailModal.items.length === 0 ? (
             <p className="text-xs text-slate-500 italic">No se registraron productos desglosados.</p>
           ) : (
-            <div className="divide-y divide-slate-800 border border-slate-800 rounded-2xl overflow-hidden bg-slate-950">
+            <div className="divide-y divide-slate-200 dark:divide-slate-800 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden bg-white dark:bg-slate-950">
               {detailModal.items.map((item) => {
                 const prodId = item.producto?.id ?? item.producto_id;
                 const prod = productosMap[prodId];
@@ -322,12 +301,12 @@ isCancelada ? 'bg-slate-800 text-slate-400 border border-slate-700' :
                 return (
                   <div key={item.id} className="p-3 flex justify-between items-center text-xs">
                     <div>
-                      <span className="font-semibold text-slate-200 block">
+                      <span className="font-semibold text-slate-800 dark:text-slate-200 block">
                         {prod ? prod.nombre : `Producto #${prodId ?? 'desconocido'}`}
                       </span>
-                      <span className="text-[10px] text-slate-500">{prod?.sede}</span>
+                      <span className="text-[10px] text-slate-500 dark:text-slate-500">{prod?.sede}</span>
                     </div>
-                    <span className="font-mono text-slate-300">
+                    <span className="font-mono text-slate-600 dark:text-slate-300">
                       {formatCurrency(precio)}
                     </span>
                   </div>
@@ -338,7 +317,6 @@ isCancelada ? 'bg-slate-800 text-slate-400 border border-slate-700' :
         </div>
       </Modal>
 
-      {/* Diálogo Cancelación Lógica RF16 */}
       <ConfirmDialog
         isOpen={confirmCancel.isOpen}
         onClose={() => setConfirmCancel({ isOpen: false, membresia: null, loading: false })}
@@ -349,7 +327,6 @@ isCancelada ? 'bg-slate-800 text-slate-400 border border-slate-700' :
         loading={confirmCancel.loading}
       />
 
-      
       <ConfirmDialog
         isOpen={confirmDelete.isOpen}
         onClose={() => setConfirmDelete({ isOpen: false, membresia: null, loading: false })}
