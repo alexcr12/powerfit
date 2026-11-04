@@ -4,7 +4,7 @@ import com.powerfitgym.backend.entidad.Asistencia;
 import com.powerfitgym.backend.servicio.AsistenciaService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.simp.SimpMessagingTemplate; // 🔥 IMPORTANTE
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -17,9 +17,8 @@ import java.util.Map;
 public class AsistenciaController {
 
     private final AsistenciaService asistenciaService;
-    private final SimpMessagingTemplate messagingTemplate; // 🔥 1. Declaramos la variable
-
-    // 🔥 2. Lo inyectamos en el constructor
+    private final SimpMessagingTemplate messagingTemplate; 
+    
     public AsistenciaController(AsistenciaService asistenciaService, SimpMessagingTemplate messagingTemplate) {
         this.asistenciaService = asistenciaService;
         this.messagingTemplate = messagingTemplate;

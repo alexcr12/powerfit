@@ -29,11 +29,9 @@ public class SecurityConfig {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth -> auth
-                        // 🔥 REGLA DE ORO: Las rutas específicas SIEMPRE van primero
+                .authorizeHttpRequests(auth -> auth        
                         .requestMatchers("/ws/**").permitAll()
                         .requestMatchers("/auth/**").permitAll()
-                        // Y la regla comodín va AL FINAL
                         .requestMatchers("/**").permitAll())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

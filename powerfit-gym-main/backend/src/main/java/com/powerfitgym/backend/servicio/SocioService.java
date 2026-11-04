@@ -51,7 +51,6 @@ public class SocioService {
         return socioRepository.save(socio);
     }
 
-    // 🔥 MÉTRICAS AQUÍ, FUERA DEL ELIMINAR
     public Map<String, Object> obtenerMetricasSocios() {
         java.time.LocalDate hoy = java.time.LocalDate.now();
         

@@ -23,7 +23,6 @@ public class Categoria {
     @Column(nullable = false)
     private Boolean activo = true;
 
-    // 🔥 NUEVO CAMPO PRECIO
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal precio = new BigDecimal("150.00");
 

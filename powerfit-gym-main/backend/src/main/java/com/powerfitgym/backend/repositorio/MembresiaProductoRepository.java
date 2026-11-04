@@ -9,7 +9,6 @@ import java.util.List;
 
 public interface MembresiaProductoRepository extends JpaRepository<MembresiaProducto, Long> {
     
-    // 👇 ESTA LÍNEA DEBE ESTAR AQUÍ, NO EN MEMBRESIA REPOSITORY
     List<MembresiaProducto> findByMembresiaId(Long membresiaId);
     
 }

@@ -40,7 +40,6 @@ public class MembresiaProductoService {
     }
 
     public MembresiaProducto crear(MembresiaProducto mp) {
-        // Validaciones básicas
         if (mp.getMembresia() == null || mp.getMembresia().getId() == null) {
             throw new IllegalArgumentException("La membresía es obligatoria para registrar el producto.");
         }
@@ -51,7 +50,6 @@ public class MembresiaProductoService {
         Long membresiaId = mp.getMembresia().getId();
         Long productoId = mp.getProducto().getId();
 
-        // Cargar entidades reales desde BD (evita el error de FK null)
         Membresia membresiaReal = membresiaRepository.findById(membresiaId)
                 .orElseThrow(() -> new RuntimeException("Membresía no encontrada con ID: " + membresiaId));
 

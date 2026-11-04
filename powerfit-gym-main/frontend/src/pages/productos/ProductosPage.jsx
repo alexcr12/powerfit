@@ -31,7 +31,6 @@ export default function ProductosPage() {
   const [formErrors, setFormErrors] = useState({});
   const [saving, setSaving] = useState(false);
 
-  // Confirm dialog para desactivación (RF13)
   const [confirmDialog, setConfirmDialog] = useState({
     isOpen: false,
     producto: null,

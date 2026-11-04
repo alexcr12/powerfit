@@ -54,7 +54,6 @@ public class MembresiaController {
 
         Membresia m = new Membresia();
 
-        // ----- Fechas -----
         LocalDate fechaInicio = parseFecha(
                 body.get("fechaInicio") != null ? body.get("fechaInicio") : body.get("fecha_inicio"),
                 LocalDate.now());
@@ -64,21 +63,18 @@ public class MembresiaController {
         m.setFechaInicio(fechaInicio);
         m.setFechaFin(fechaFin);
 
-        // ----- Monto -----
         Object monto = body.get("montoTotal") != null ? body.get("montoTotal") : body.get("monto_total");
         m.setMontoTotal(parseBigDecimal(monto, BigDecimal.ZERO));
 
-        // ----- Estado -----
         Object estadoObj = body.get("estado");
         m.setEstado(estadoObj != null && !estadoObj.toString().isBlank()
                 ? estadoObj.toString()
                 : "activa");
 
-        // ----- Es primera -----
+        
         Object primera = body.get("esPrimera") != null ? body.get("esPrimera") : body.get("es_primera");
         m.setEsPrimera(parseBoolean(primera, false));
 
-        // ----- Referencia de socio -----
         Socio socioRef = new Socio();
         socioRef.setId(idSocio);
         m.setSocio(socioRef);
@@ -86,7 +82,6 @@ public class MembresiaController {
         return new ResponseEntity<>(membresiaService.crear(m), HttpStatus.CREATED);
     }
 
-    // 🔥 AQUÍ ESTÁ EL MÉTODO PARA CANCELAR (CORREGIDO)
     @PatchMapping("/{id}")
     public ResponseEntity<Membresia> actualizar(@PathVariable Long id, @RequestBody Membresia membresia) {
         return ResponseEntity.ok(membresiaService.actualizar(id, membresia));

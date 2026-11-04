@@ -56,7 +56,7 @@ export default function CategoriasPage() {
   const handleOpenEdit = (cat) => {
     setEditingCategoria(cat);
     setNombre(cat.nombre);
-    // Si la categoría ya trae beneficios, los marcamos
+
     setSelectedProductIds(cat.beneficiosBase ? cat.beneficiosBase.map(p => p.id) : []);
     setNombreError('');
     setIsModalOpen(true);
@@ -77,7 +77,7 @@ export default function CategoriasPage() {
       
       const payload = { 
         nombre: nombre.trim(),
-        beneficiosBase: selectedProductIds // 🔥 Enviamos los IDs
+        beneficiosBase: selectedProductIds 
       };
 
       if (editingCategoria) {

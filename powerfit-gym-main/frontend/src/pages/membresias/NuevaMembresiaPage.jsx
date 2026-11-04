@@ -66,7 +66,6 @@ export default function NuevaMembresiaPage() {
     setSelectedCategoriaId(catId);
     const catSeleccionada = categorias.find(c => c.id === catId);
     
-    // 🔥 ASIGNAMOS AUTOMÁTICAMENTE LOS PRODUCTOS BASE DE LA CATEGORÍA
     if (catSeleccionada && catSeleccionada.beneficiosBase) {
       setSelectedProductIds(catSeleccionada.beneficiosBase.map(p => p.id));
     } else {
@@ -74,7 +73,6 @@ export default function NuevaMembresiaPage() {
     }
   };
 
-  // Calculamos el precio sumando SOLO los productos que vienen de los beneficios base
   const productosBase = productos
     .filter(p => selectedProductIds.includes(p.id))
     .map(p => ({ ...p, precio_base: Number(p.precioBase ?? p.precio_base ?? 0) }));

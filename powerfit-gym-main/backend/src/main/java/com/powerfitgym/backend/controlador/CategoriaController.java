@@ -45,12 +45,10 @@ public class CategoriaController {
         categoria.setNombre(body.get("nombre").toString());
         categoria.setActivo(true);
 
-        // 🔥 LEER EL PRECIO
-        if (body.get("precio") != null) {
+      if (body.get("precio") != null) {
             categoria.setPrecio(new BigDecimal(body.get("precio").toString()));
         }
 
-        // LEER LOS PRODUCTOS BASE
         if (body.get("beneficiosBase") != null) {
             List<Integer> ids = (List<Integer>) body.get("beneficiosBase");
             List<Producto> productos = new ArrayList<>();
@@ -69,12 +67,10 @@ public class CategoriaController {
         
         if (body.get("nombre") != null) datos.setNombre(body.get("nombre").toString());
         
-        // 🔥 ACTUALIZAR EL PRECIO
         if (body.get("precio") != null) {
             datos.setPrecio(new BigDecimal(body.get("precio").toString()));
         }
 
-        // ACTUALIZAR LOS PRODUCTOS BASE
         if (body.get("beneficiosBase") != null) {
             List<Integer> ids = (List<Integer>) body.get("beneficiosBase");
             List<Producto> productos = new ArrayList<>();

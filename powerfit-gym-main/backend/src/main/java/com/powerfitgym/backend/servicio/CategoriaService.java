@@ -41,8 +41,6 @@ public class CategoriaService {
         if (datosActualizados.getActivo() != null)
             categoria.setActivo(datosActualizados.getActivo());
 
-        // 🔥 ESTO ES LO QUE FALTABA: Actualizar los productos base si vienen en los
-        // datos
         if (datosActualizados.getBeneficiosBase() != null) {
             categoria.setBeneficiosBase(datosActualizados.getBeneficiosBase());
         }

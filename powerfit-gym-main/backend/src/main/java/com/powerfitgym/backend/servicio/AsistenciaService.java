@@ -49,7 +49,6 @@ public class AsistenciaService {
             a.setSede(datos.getSede());
 
         if (datos.getSocio() != null && datos.getSocio().getId() != null) {
-            // Ahora sí, el IDE reconocerá socioRepository
             Socio socioReal = socioRepository.findById(datos.getSocio().getId())
                     .orElseThrow(() -> new RuntimeException("Socio no encontrado"));
             a.setSocio(socioReal);

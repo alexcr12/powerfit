@@ -66,7 +66,6 @@ public class MembresiaProductoController {
 
         MembresiaProducto mp = new MembresiaProducto();
 
-        // Referencias por ID (el servicio las carga desde BD)
         Membresia mRef = new Membresia();
         mRef.setId(membresiaId);
         mp.setMembresia(mRef);
