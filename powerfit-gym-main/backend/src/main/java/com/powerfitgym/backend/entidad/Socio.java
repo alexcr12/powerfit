@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 @Table(name = "socios")
@@ -20,8 +21,21 @@ public class Socio {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "registrado_por", length = 100)
-    private String registradoPor;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "registrado_por", nullable = false)
+    @JsonIgnore
+    private Usuario registradoPor;
+
+    @JsonProperty("registrado_por")
+    public Long getRegistradoPorId() { return registradoPor == null ? null : registradoPor.getId(); }
+
+    @JsonProperty("registrado_por")
+    public void setRegistradoPorId(Long id) {
+        if (id == null) { this.registradoPor = null; return; }
+        Usuario usuario = new Usuario();
+        usuario.setId(id);
+        this.registradoPor = usuario;
+    }
 
     @Column(nullable = false, length = 150)
     private String nombre;

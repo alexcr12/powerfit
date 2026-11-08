@@ -38,7 +38,7 @@ public class AuthController {
 
         Usuario usuario = usuarioRepository.findByEmail(email).orElse(null);
 
-        if (usuario == null) {
+        if (usuario == null || !Boolean.TRUE.equals(usuario.getActivo())) {
             System.out.println("❌ Usuario no encontrado");
             return ResponseEntity.status(401).body(Map.of("mensaje", "Credenciales incorrectas"));
         }

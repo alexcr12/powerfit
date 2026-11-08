@@ -28,6 +28,7 @@ public class UsuarioService {
     }
 
     public Usuario crear(Usuario usuario) {
+        validarRol(usuario.getRol());
         if (usuarioRepository.existsByEmail(usuario.getEmail())) {
             throw new RuntimeException("El correo ya está registrado");
         }
@@ -38,6 +39,7 @@ public class UsuarioService {
 
     public Usuario actualizar(Long id, Usuario datosActualizados) {
         Usuario usuario = buscarPorId(id);
+        if (datosActualizados.getRol() != null) validarRol(datosActualizados.getRol());
 
         if (datosActualizados.getNombre() != null)
             usuario.setNombre(datosActualizados.getNombre());
@@ -56,9 +58,13 @@ public class UsuarioService {
     }
 
     public void eliminar(Long id) {
-        if (!usuarioRepository.existsById(id)) {
-            throw new RuntimeException("Usuario no encontrado con ID: " + id);
-        }
-        usuarioRepository.deleteById(id);
+        Usuario usuario = buscarPorId(id);
+        usuario.setActivo(false);
+        usuarioRepository.save(usuario);
+    }
+
+    private void validarRol(String rol) {
+        if (!"admin".equals(rol) && !"staff".equals(rol))
+            throw new IllegalArgumentException("El rol debe ser admin o staff");
     }
 }

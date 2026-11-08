@@ -4,6 +4,9 @@ import com.powerfitgym.backend.entidad.*;
 import com.powerfitgym.backend.repositorio.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import com.powerfitgym.backend.repositorio.UsuarioRepository;
 
 import java.util.List;
 import java.util.Map;
@@ -15,15 +18,18 @@ public class SocioService {
     private final AsistenciaRepository asistenciaRepository;
     private final MembresiaRepository membresiaRepository;
     private final PaseInvitadoRepository paseInvitadoRepository;
+    private final UsuarioRepository usuarioRepository;
 
     public SocioService(SocioRepository socioRepository,
             AsistenciaRepository asistenciaRepository,
             MembresiaRepository membresiaRepository,
-            PaseInvitadoRepository paseInvitadoRepository) {
+            PaseInvitadoRepository paseInvitadoRepository,
+            UsuarioRepository usuarioRepository) {
         this.socioRepository = socioRepository;
         this.asistenciaRepository = asistenciaRepository;
         this.membresiaRepository = membresiaRepository;
         this.paseInvitadoRepository = paseInvitadoRepository;
+        this.usuarioRepository = usuarioRepository;
     }
 
     public List<Socio> listarTodos() {
@@ -36,6 +42,18 @@ public class SocioService {
     }
 
     public Socio crear(Socio socio) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()
+                && authentication.getName() != null && !"anonymousUser".equals(authentication.getName())) {
+            socio.setRegistradoPor(usuarioRepository.findByEmail(authentication.getName())
+                    .orElseThrow(() -> new IllegalArgumentException("Usuario autenticado no encontrado.")));
+        } else if (socio.getRegistradoPor() != null && socio.getRegistradoPor().getId() != null) {
+            Long usuarioId = socio.getRegistradoPor().getId();
+            socio.setRegistradoPor(usuarioRepository.findById(usuarioId)
+                    .orElseThrow(() -> new IllegalArgumentException("Usuario registrado_por no encontrado.")));
+        } else {
+            throw new IllegalArgumentException("El usuario registrado_por es obligatorio.");
+        }
         return socioRepository.save(socio);
     }
 
