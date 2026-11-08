@@ -14,7 +14,11 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class AsistenciaService {
@@ -37,6 +41,34 @@ public class AsistenciaService {
 
     public List<Asistencia> listarPorSocio(Long socioId) {
         return asistenciaRepository.findBySocioId(socioId);
+    }
+
+    public long contarPorProductoYFecha(Long productoId, LocalDate fecha) {
+        return asistenciaRepository.countByProductoIdAndFechaHoraBetween(productoId,
+                fecha.atStartOfDay(), fecha.atTime(LocalTime.MAX));
+    }
+
+    public Producto buscarProducto(Long productoId) {
+        return productoRepository.findById(productoId)
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+    }
+
+    public List<Map<String, Object>> contarHoyPorClase(LocalDate fecha) {
+        LocalDateTime inicio = fecha.atStartOfDay();
+        LocalDateTime fin = fecha.atTime(LocalTime.MAX);
+        Map<Long, Long> conteos = new HashMap<>();
+        for (Object[] fila : asistenciaRepository.contarPorProductoAgrupado(inicio, fin))
+            conteos.put((Long) fila[0], (Long) fila[1]);
+
+        List<Map<String, Object>> resultado = new ArrayList<>();
+        for (Producto producto : productoRepository.findByRequiereAsistenciaTrueAndActivoTrue()) {
+            Map<String, Object> contador = new HashMap<>();
+            contador.put("productoId", producto.getId());
+            contador.put("producto", producto.getNombre());
+            contador.put("total", conteos.getOrDefault(producto.getId(), 0L));
+            resultado.add(contador);
+        }
+        return resultado;
     }
 
     @Transactional

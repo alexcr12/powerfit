@@ -8,6 +8,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -35,6 +36,11 @@ public class AsistenciaController {
     @GetMapping("/{id}")
     public ResponseEntity<Asistencia> buscarPorId(@PathVariable Long id) {
         return ResponseEntity.ok(asistenciaService.buscarPorId(id));
+    }
+
+    @GetMapping("/contador-hoy")
+    public ResponseEntity<List<Map<String, Object>>> contadorHoy() {
+        return ResponseEntity.ok(asistenciaService.contarHoyPorClase(LocalDate.now()));
     }
 
     @PostMapping
@@ -87,7 +93,7 @@ public class AsistenciaController {
         asistencia.setProducto(producto);
 
         Asistencia nuevaAsistencia = asistenciaService.registrar(asistencia);
-        messagingTemplate.convertAndSend("/topic/asistencias", nuevaAsistencia);
+        publicarContador(nuevaAsistencia.getProducto().getId(), nuevaAsistencia.getFechaHora().toLocalDate());
         return new ResponseEntity<>(nuevaAsistencia, HttpStatus.CREATED);
     }
 
@@ -138,13 +144,37 @@ public class AsistenciaController {
             datos.setSocio(sRef);
         }
 
+        Asistencia anterior = asistenciaService.buscarPorId(id);
+        Long productoAnterior = anterior.getProducto().getId();
+        LocalDate fechaAnterior = anterior.getFechaHora().toLocalDate();
         Asistencia actualizada = asistenciaService.actualizar(id, datos);
+        Long productoNuevo = actualizada.getProducto().getId();
+        LocalDate fechaNueva = actualizada.getFechaHora().toLocalDate();
+        if (!productoAnterior.equals(productoNuevo) || !fechaAnterior.equals(fechaNueva)) {
+            publicarContador(productoAnterior, fechaAnterior);
+            publicarContador(productoNuevo, fechaNueva);
+        }
         return ResponseEntity.ok(actualizada);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+        Asistencia asistencia = asistenciaService.buscarPorId(id);
+        Long productoId = asistencia.getProducto().getId();
+        LocalDate fecha = asistencia.getFechaHora().toLocalDate();
         asistenciaService.eliminar(id);
+        publicarContador(productoId, fecha);
         return ResponseEntity.noContent().build();
+    }
+
+    private void publicarContador(Long productoId, LocalDate fecha) {
+        com.powerfitgym.backend.entidad.Producto producto = asistenciaService.buscarProducto(productoId);
+        long total = asistenciaService.contarPorProductoYFecha(productoId, fecha);
+        Map<String, Object> mensaje = Map.of(
+                "productoId", productoId,
+                "producto", producto.getNombre(),
+                "total", total,
+                "fecha", fecha.toString());
+        messagingTemplate.convertAndSend("/topic/asistencias", mensaje);
     }
 }
