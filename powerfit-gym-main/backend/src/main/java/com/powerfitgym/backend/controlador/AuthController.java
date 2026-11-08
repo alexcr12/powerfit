@@ -47,8 +47,14 @@ public class AuthController {
             return ResponseEntity.status(401).body(Map.of("mensaje", "Credenciales incorrectas"));
         }
 
-        UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-        String jwt = jwtService.generarToken(userDetails);
+        String jwt;
+        try {
+            UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+            jwt = jwtService.generarToken(userDetails);
+        } catch (Exception exception) {
+            log.error("No se pudo generar el token para email={}", email, exception);
+            return ResponseEntity.status(500).body(Map.of("mensaje", "No se pudo iniciar sesión"));
+        }
         log.info("Login exitoso email={}", email);
 
         return ResponseEntity.ok(Map.of(

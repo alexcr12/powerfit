@@ -3,7 +3,7 @@ SET FOREIGN_KEY_CHECKS = 0;
 
 INSERT IGNORE INTO usuarios (id, nombre, email, password, rol, activo) VALUES 
 (1, 'Carlos Mendoza', 'admin@powerfit.com', '$2a$12$JtqCkbRN7XyBAhRGeX8hReBacQjzP.QU5jdNx9ZR16.V97zXWTO1K', 'admin', 1),
-(2, 'Lucía Torres', 'staff@powerfit.com', '$2a$12$JtqCkbRN7XyBAhRGeX8hReBacQjzP.QU5jdNx9ZR16.V97zXWTO1K', 'staff', 1);
+(2, 'Lucía Torres', 'staff@powerfit.com', '$2a$10$WAeuSAvqUFel.c3xO9bJZuEBwEZrIB1pF.gQYRcsQMxT2tCkB5udC', 'staff', 1);
 
 
 INSERT IGNORE INTO categorias (id, nombre, activo) VALUES 
