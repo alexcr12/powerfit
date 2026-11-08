@@ -14,7 +14,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/pases_invitado")
 public class PaseInvitadoController {
-
     private final PaseInvitadoService paseService;
 
     public PaseInvitadoController(PaseInvitadoService paseService) {
@@ -23,48 +22,64 @@ public class PaseInvitadoController {
 
     @GetMapping
     public ResponseEntity<List<PaseInvitado>> listar(
-            @RequestParam(required = false, name = "socio_id") Long socioId) {
-        if (socioId != null) {
-            return ResponseEntity.ok(paseService.listarPorSocio(socioId));
-        }
-        return ResponseEntity.ok(paseService.listarTodos());
+            @RequestParam(required = false, name = "socio_id") Long socioId,
+            @RequestParam(required = false) LocalDate fecha,
+            @RequestParam(required = false) Boolean activo) {
+        return ResponseEntity.ok(paseService.listarConFiltros(socioId, fecha, activo));
+    }
+
+    @GetMapping("/disponibles")
+    public ResponseEntity<Map<String, Object>> disponibles(
+            @RequestParam(required = false, name = "socio_id") Long socioId,
+            @RequestParam(required = false) LocalDate fecha) {
+        return ResponseEntity.ok(paseService.disponibles(socioId, fecha));
     }
 
     @PostMapping
     public ResponseEntity<PaseInvitado> crear(@RequestBody Map<String, Object> body) {
-
         Object socioIdObj = body.get("socio_id") != null ? body.get("socio_id") : body.get("socioId");
-        if (socioIdObj == null && body.get("socio") instanceof Map<?, ?> sm) {
-            socioIdObj = sm.get("id");
-        }
+        if (socioIdObj == null && body.get("socio") instanceof Map<?, ?> socioMap)
+            socioIdObj = socioMap.get("id");
+        Long socioId = convertirALong(socioIdObj);
+        if (socioId == null) throw new IllegalArgumentException("El socio_id es obligatorio para generar el pase.");
 
-        if (socioIdObj == null) {
-            throw new IllegalArgumentException("El socio_id es obligatorio para generar el pase.");
-        }
+        Object nombre = body.get("nombre_inv") != null ? body.get("nombre_inv") : body.get("nombreInv");
+        if (nombre == null || nombre.toString().isBlank())
+            throw new IllegalArgumentException("El nombre_inv es obligatorio.");
 
+        Object fecha = body.get("fecha_uso") != null ? body.get("fecha_uso") : body.get("fechaUso");
         PaseInvitado pase = new PaseInvitado();
-
-        Socio socioRef = new Socio();
-        socioRef.setId(Long.valueOf(socioIdObj.toString()));
-        pase.setSocio(socioRef);
-
-        Object nombreInv = body.get("nombre_inv") != null ? body.get("nombre_inv") : body.get("nombreInv");
-        pase.setNombreInv(nombreInv != null ? nombreInv.toString().trim() : "Invitado Anónimo");
-
-        Object fechaUso = body.get("fecha_uso") != null ? body.get("fecha_uso") : body.get("fechaUso");
-        if (fechaUso != null) {
-            try {
-                pase.setFechaUso(LocalDate.parse(fechaUso.toString()));
-            } catch (Exception e) {
-                pase.setFechaUso(LocalDate.now());
-            }
-        } else {
-            pase.setFechaUso(LocalDate.now());
-        }
-
-        Object activoObj = body.get("activo");
-        pase.setActivo(activoObj == null || Boolean.parseBoolean(activoObj.toString()));
-
+        Socio socio = new Socio();
+        socio.setId(socioId);
+        pase.setSocio(socio);
+        pase.setNombreInv(nombre.toString().trim());
+        pase.setFechaUso(fecha == null ? LocalDate.now() : parseFecha(fecha));
         return new ResponseEntity<>(paseService.crear(pase), HttpStatus.CREATED);
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<PaseInvitado> actualizar(@PathVariable Long id, @RequestBody Map<String, Object> body) {
+        Object nombre = body.containsKey("nombre_inv") ? body.get("nombre_inv") : body.get("nombreInv");
+        Object fecha = body.containsKey("fecha_uso") ? body.get("fecha_uso") : body.get("fechaUso");
+        return ResponseEntity.ok(paseService.actualizar(id,
+                nombre == null ? null : nombre.toString(), fecha == null ? null : parseFecha(fecha)));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+        paseService.eliminar(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    private Long convertirALong(Object value) {
+        if (value == null) return null;
+        if (value instanceof Number number) return number.longValue();
+        try { return Long.valueOf(value.toString().trim()); }
+        catch (NumberFormatException exception) { return null; }
+    }
+
+    private LocalDate parseFecha(Object value) {
+        try { return LocalDate.parse(value.toString()); }
+        catch (RuntimeException exception) { throw new IllegalArgumentException("Formato de fecha inválido: " + value); }
     }
 }

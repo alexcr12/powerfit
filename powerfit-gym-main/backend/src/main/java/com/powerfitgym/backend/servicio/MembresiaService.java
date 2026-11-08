@@ -79,7 +79,7 @@ public class MembresiaService {
 
         if (membresia.getFechaFin().isBefore(membresia.getFechaInicio()))
             throw new ReglaNegocioException("La fecha_fin debe ser igual o posterior a fecha_inicio.");
-        if (membresia.getMontoTotal() == null || membresia.getMontoTotal().compareTo(BigDecimal.ZERO) <= 0)
+        if (datos.getMontoTotal() != null && datos.getMontoTotal().compareTo(BigDecimal.ZERO) <= 0)
             throw new ReglaNegocioException("El monto_total debe ser mayor que cero.");
         return membresiaRepository.save(membresia);
     }

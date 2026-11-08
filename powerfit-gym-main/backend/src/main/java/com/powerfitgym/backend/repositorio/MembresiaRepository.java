@@ -19,6 +19,11 @@ public interface MembresiaRepository extends JpaRepository<Membresia, Long> {
     boolean existsBySocioIdAndCategoriaIdAndActivoTrueAndFechaFinGreaterThanEqual(
             Long socioId, Long categoriaId, LocalDate hoy);
 
+    boolean existsBySocioIdAndActivoTrueAndFechaInicioLessThanEqualAndFechaFinGreaterThanEqual(
+            Long socioId, LocalDate fechaUsoInicio, LocalDate fechaUsoFin);
+
+    long countBySocioId(Long socioId);
+
     @Query("select m from Membresia m where " +
             "(:socioId is null or m.socio.id = :socioId) and " +
             "(:activo is null or m.activo = :activo) and " +
