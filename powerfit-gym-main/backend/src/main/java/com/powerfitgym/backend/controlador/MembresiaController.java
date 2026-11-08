@@ -14,7 +14,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/membresias")
-@CrossOrigin(origins = "*")
 public class MembresiaController {
 
     private final MembresiaService membresiaService;
@@ -44,8 +43,6 @@ public class MembresiaController {
 
     @PostMapping
     public ResponseEntity<Membresia> crear(@RequestBody Map<String, Object> body) {
-
-        System.out.println("=== BODY RECIBIDO: " + body);
 
         Long idSocio = extraerSocioId(body);
         if (idSocio == null) {

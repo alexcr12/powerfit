@@ -13,7 +13,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/asistencias")
-@CrossOrigin(origins = "*")
 public class AsistenciaController {
 
     private final AsistenciaService asistenciaService;
@@ -40,8 +39,6 @@ public class AsistenciaController {
 
     @PostMapping
     public ResponseEntity<Asistencia> registrar(@RequestBody Map<String, Object> body) {
-
-        System.out.println("=== BODY ASISTENCIA: " + body);
 
         Object socioIdObj = body.get("socio_id") != null ? body.get("socio_id") : body.get("socioId");
         if (socioIdObj == null && body.get("socio") instanceof Map<?, ?> sm) {
@@ -91,8 +88,6 @@ public class AsistenciaController {
 
         Asistencia nuevaAsistencia = asistenciaService.registrar(asistencia);
         messagingTemplate.convertAndSend("/topic/asistencias", nuevaAsistencia);
-        System.out.println("📢 MENSAJE WEBSOCKET ENVIADO");
-
         return new ResponseEntity<>(nuevaAsistencia, HttpStatus.CREATED);
     }
 
@@ -100,8 +95,6 @@ public class AsistenciaController {
     public ResponseEntity<Asistencia> actualizar(
             @PathVariable Long id,
             @RequestBody Map<String, Object> body) {
-
-        System.out.println("=== PATCH ASISTENCIA ID " + id + " BODY: " + body);
 
         Asistencia datos = new Asistencia();
 

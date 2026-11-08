@@ -42,16 +42,6 @@ public class PaseInvitadoService {
             pase.setActivo(true);
         }
 
-        try {
-
-            PaseInvitado guardado = paseRepository.saveAndFlush(pase);
-            System.out.println("✅ PASE GUARDADO EN BD CON ID: " + guardado.getId());
-            return guardado;
-        } catch (Exception e) {
-
-            System.out.println("❌ ERROR AL GUARDAR PASE: " + e.getMessage());
-            e.printStackTrace();
-            throw e;
-        }
+        return paseRepository.saveAndFlush(pase);
     }
 }

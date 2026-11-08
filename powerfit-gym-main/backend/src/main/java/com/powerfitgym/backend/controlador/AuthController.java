@@ -13,7 +13,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
-@CrossOrigin(origins = "*")
 public class AuthController {
 
     private final JwtService jwtService;
@@ -34,24 +33,18 @@ public class AuthController {
         String email = request.get("email");
         String password = request.get("password");
 
-        System.out.println("=== INTENTO DE LOGIN: " + email);
-
         Usuario usuario = usuarioRepository.findByEmail(email).orElse(null);
 
         if (usuario == null || !Boolean.TRUE.equals(usuario.getActivo())) {
-            System.out.println("❌ Usuario no encontrado");
             return ResponseEntity.status(401).body(Map.of("mensaje", "Credenciales incorrectas"));
         }
 
         if (!passwordEncoder.matches(password, usuario.getPassword())) {
-            System.out.println("❌ Contraseña incorrecta");
             return ResponseEntity.status(401).body(Map.of("mensaje", "Credenciales incorrectas"));
         }
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(email);
         String jwt = jwtService.generarToken(userDetails);
-
-        System.out.println("✅ LOGIN EXITOSO. TOKEN GENERADO.");
 
         return ResponseEntity.ok(Map.of(
                 "token", jwt,

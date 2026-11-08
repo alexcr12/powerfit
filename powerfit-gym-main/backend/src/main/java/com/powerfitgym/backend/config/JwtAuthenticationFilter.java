@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -33,7 +34,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain) throws ServletException, IOException {
 
      
-        if (request.getServletPath().contains("/auth/")) {
+        if ("/auth/login".equals(request.getServletPath())) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -65,7 +66,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             }
         } catch (Exception e) {
-            System.out.println("Error validando el token: " + e.getMessage());
+            SecurityContextHolder.clearContext();
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            response.setContentType("application/json;charset=UTF-8");
+            response.getWriter().write("{\"mensaje\":\"Token inválido o expirado\"}");
+            return;
         }
 
         filterChain.doFilter(request, response);

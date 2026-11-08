@@ -12,7 +12,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/productos")
-@CrossOrigin(origins = "*")
 public class ProductoController {
 
     private final ProductoService productoService;
@@ -42,8 +41,6 @@ public class ProductoController {
 
     @PostMapping
     public ResponseEntity<Producto> crear(@RequestBody Map<String, Object> body) {
-        System.out.println("=== BODY PRODUCTO: " + body);
-
         Producto producto = new Producto();
         producto.setNombre(body.get("nombre").toString());
         Object requiereAsistencia = body.get("requiere_asistencia") != null ? body.get("requiere_asistencia") : body.get("requiereAsistencia");
@@ -65,8 +62,6 @@ public class ProductoController {
     // 🔥 SOLO HAY UN PATCH AQUÍ
     @PatchMapping("/{id}")
     public ResponseEntity<Producto> actualizar(@PathVariable Long id, @RequestBody Map<String, Object> body) {
-        System.out.println("=== PATCH PRODUCTO ID " + id + " BODY: " + body);
-
         Producto datos = new Producto();
         if (body.get("nombre") != null)
             datos.setNombre(body.get("nombre").toString());

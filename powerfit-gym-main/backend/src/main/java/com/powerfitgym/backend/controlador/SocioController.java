@@ -11,7 +11,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/socios")
-@CrossOrigin(origins = "*")
 public class SocioController {
 
     private final SocioService socioService;

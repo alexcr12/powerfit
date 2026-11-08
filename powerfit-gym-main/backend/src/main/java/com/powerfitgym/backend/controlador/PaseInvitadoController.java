@@ -13,7 +13,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/pases_invitado")
-@CrossOrigin(origins = "*")
 public class PaseInvitadoController {
 
     private final PaseInvitadoService paseService;
@@ -33,8 +32,6 @@ public class PaseInvitadoController {
 
     @PostMapping
     public ResponseEntity<PaseInvitado> crear(@RequestBody Map<String, Object> body) {
-
-        System.out.println("=== NUEVO PASE INVITADO: " + body);
 
         Object socioIdObj = body.get("socio_id") != null ? body.get("socio_id") : body.get("socioId");
         if (socioIdObj == null && body.get("socio") instanceof Map<?, ?> sm) {
