@@ -67,11 +67,12 @@ export function AuthProvider({ children }) {
     // 🔥 Limpiamos TODOS los datos de sesión, incluyendo el Token
     localStorage.removeItem(USER_STORAGE_KEY);
     localStorage.removeItem('token');
+    localStorage.removeItem('rol');
+    localStorage.removeItem('nombre');
   };
 
-  // Verificamos el rol (asegúrate de que en tu archivo roles.js estén en mayúsculas: 'ADMIN', 'STAFF')
-  const isAdmin = user?.rol?.toUpperCase() === (ROLES.ADMIN || 'ADMIN');
-  const isStaff = user?.rol?.toUpperCase() === (ROLES.STAFF || 'STAFF');
+  const isAdmin = user?.rol === ROLES.ADMIN;
+  const isStaff = user?.rol === ROLES.STAFF;
   const isAuthenticated = !!user;
 
   return (

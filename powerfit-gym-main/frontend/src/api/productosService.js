@@ -1,51 +1,45 @@
 import api from './axiosInstance';
 
+const normalizar = (producto) => ({
+  ...producto,
+  categoria_id: producto.categoria_id?.id ?? producto.categoria?.id ?? producto.categoria_id ?? producto.categoriaId,
+  requiere_asistencia: producto.requiere_asistencia ?? producto.requiereAsistencia ?? false,
+  activo: producto.activo ?? true,
+});
+
 export const productosService = {
-  // RF11: Listar productos
   getAll: async () => {
     const res = await api.get('/productos');
-    // 🔥 Normalizamos los datos para que la tabla de React los encuentre
-    return res.data.map(p => ({
-      ...p,
-      categoria_id: p.categoriaId || p.categoria_id || p.categoria?.id,
-      precio_base: p.precioBase ?? p.precio_base ?? 0,
-      activo: p.activo ?? true
-    }));
+    return res.data.map(normalizar);
   },
 
   getById: async (id) => {
     const res = await api.get(`/productos/${id}`);
-    const p = res.data;
-    return {
-      ...p,
-      categoria_id: p.categoriaId || p.categoria_id || p.categoria?.id,
-      precio_base: p.precioBase ?? p.precio_base ?? 0,
-      activo: p.activo ?? true
-    };
+    return normalizar(res.data);
   },
 
-  // RF10: Registrar producto
-   create: async (productoData) => {
+  getClases: async () => {
+    const res = await api.get('/productos', { params: { activo: true } });
+    return res.data.map(normalizar).filter((producto) => producto.requiere_asistencia);
+  },
+
+  create: async (productoData) => {
     const payload = {
       nombre: productoData.nombre,
       categoria_id: Number(productoData.categoria_id),
-      precio_base: Number(productoData.precio_base) || 0,
-      sede: productoData.sede,
+      requiere_asistencia: Boolean(productoData.requiere_asistencia),
       activo: true,
     };
-    const res = await api.post('/productos', payload);
-    return res.data;
+    return normalizar((await api.post('/productos', payload)).data);
   },
 
   update: async (id, productoData) => {
     const payload = {
       nombre: productoData.nombre,
       categoria_id: Number(productoData.categoria_id),
-      precio_base: Number(productoData.precio_base) || 0,
-      sede: productoData.sede,
+      requiere_asistencia: Boolean(productoData.requiere_asistencia),
     };
-    const res = await api.patch(`/productos/${id}`, payload);
-    return res.data;
+    return normalizar((await api.patch(`/productos/${id}`, payload)).data);
   },
 
   // RF13: Desactivar producto (Borrado Lógico)

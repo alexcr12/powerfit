@@ -15,7 +15,7 @@ export const categoriasService = {
   // RF07: Registrar categoría
   create: async (categoriaData) => {
     const payload = {
-      ...categoriaData,
+      nombre: categoriaData.nombre,
       activo: true,
     };
     const res = await api.post('/categorias', payload);
@@ -33,3 +33,4 @@ export const categoriasService = {
     return res.data;
   },
 };
+

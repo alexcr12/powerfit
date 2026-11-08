@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { obtenerMensajeError } from '../../utils/obtenerMensajeError';
 import { UserPlus, Edit2, UserX, UserCheck, ShieldAlert, History } from 'lucide-react';
 import { sociosService } from '../../api/sociosService';
 import { useAuth } from '../../context/AuthContext';
@@ -44,7 +45,8 @@ export default function SociosPage({ openCreateModal = false }) {
       const data = await sociosService.getAll();
       setSocios(data);
     } catch (err) {
-      setError('No se pudieron cargar los socios desde la API.');
+      setError(obtenerMensajeError(err));
+      addToast(obtenerMensajeError(err), 'error');
     } finally {
       setLoading(false);
     }
@@ -120,7 +122,7 @@ export default function SociosPage({ openCreateModal = false }) {
       setIsModalOpen(false);
       loadSocios();
     } catch (err) {
-      addToast('Error al guardar el socio. Intente nuevamente.', 'error');
+      addToast(obtenerMensajeError(err), 'error');
     } finally {
       setSaving(false);
     }
@@ -137,7 +139,7 @@ export default function SociosPage({ openCreateModal = false }) {
       setConfirmDialog({ isOpen: false, socio: null, loading: false });
       loadSocios();
     } catch (err) {
-      addToast('No se pudo desactivar el socio.', 'error');
+      addToast(obtenerMensajeError(err), 'error');
       setConfirmDialog((prev) => ({ ...prev, loading: false }));
     }
   };
@@ -148,7 +150,7 @@ export default function SociosPage({ openCreateModal = false }) {
       addToast(`Socio "${socio.nombre}" reactivado exitosamente.`, 'success');
       loadSocios();
     } catch (err) {
-      addToast('Error al reactivar el socio.', 'error');
+      addToast(obtenerMensajeError(err), 'error');
     }
   };
 
@@ -358,3 +360,6 @@ export default function SociosPage({ openCreateModal = false }) {
     </div>
   );
 }
+
+
+

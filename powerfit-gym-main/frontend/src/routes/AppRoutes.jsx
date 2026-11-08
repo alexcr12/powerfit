@@ -19,7 +19,6 @@ import NuevaMembresiaPage from '../pages/membresias/NuevaMembresiaPage';
 import AsistenciasPage from '../pages/asistencias/AsistenciasPage';
 import NuevaAsistenciaPage from '../pages/asistencias/NuevaAsistenciaPage';
 import PasesPage from '../pages/pases/PasesPage';
-//import LogsPage from '../pages/logs/LogsPage';
 
 export default function AppRoutes() {
   return (
@@ -78,16 +77,11 @@ export default function AppRoutes() {
             </RoleRoute>
           }
         />
-     {/* <Route
-          path="logs"
-          element={
-            <RoleRoute allowedRoles={[ROLES.ADMIN]}>
-              <LogsPage />
-            </RoleRoute>
-          }
-        /> */}
+     {}
       </Route>
       <Route path="*" element={<NotFound404 />} />
     </Routes>
   );
 }
+
+

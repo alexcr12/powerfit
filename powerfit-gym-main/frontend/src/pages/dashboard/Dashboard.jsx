@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { obtenerMensajeError } from '../../utils/obtenerMensajeError';
 import { Link } from 'react-router-dom';
 import {
   Users,
@@ -10,10 +11,12 @@ import {
   Sparkles
 } from 'lucide-react';
 import api from '../../api/axiosInstance';
+import { useToast } from '../../context/ToastContext';
 import { useAuth } from '../../context/AuthContext';
 
 export default function Dashboard() {
   const { user } = useAuth();
+  const { addToast } = useToast();
   const [stats, setStats] = useState({
     sociosActivos: 0,
     membresiasVigentes: 0,
@@ -44,7 +47,7 @@ export default function Dashboard() {
 
         setStats({
           sociosActivos: socios.filter((s) => s.activo).length,
-          membresiasVigentes: membresias.filter((m) => m.estado === 'activa').length,
+          membresiasVigentes: membresias.filter((m) => m.activo && (m.fecha_fin || m.fechaFin) >= new Date().toISOString().slice(0, 10)).length,
           asistenciasHoy: hoyAsist.length > 0 ? hoyAsist.length : asistencias.slice(-5).length,
           pasesEmitidos: pases.length,
         });
@@ -61,7 +64,7 @@ export default function Dashboard() {
         });
         setRecentAsistencias(ultimas);
       } catch (err) {
-        console.error('Error al cargar métricas del dashboard:', err);
+        addToast(obtenerMensajeError(err), 'error');
       } finally {
         setLoading(false);
       }
@@ -224,3 +227,6 @@ export default function Dashboard() {
     </div>
   );
 }
+
+
+

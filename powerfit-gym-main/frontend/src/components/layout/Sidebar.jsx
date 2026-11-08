@@ -9,7 +9,6 @@ import {
   Tags,
   Package,
   UserCog,
-  FileText,
   Dumbbell,
   X,
   Sun,
@@ -36,7 +35,6 @@ export default function Sidebar({ isOpen, onClose }) {
     { to: '/categorias', label: 'Categorías', icon: Tags, badge: 'RF07-09' },
     { to: '/productos', label: 'Productos & Servicios', icon: Package, badge: 'RF10-13' },
     { to: '/usuarios', label: 'Gestión Personal', icon: UserCog, badge: 'RF05-06' },
-    { to: '/logs', label: 'Auditoría / Logs', icon: FileText, badge: 'Admin' },
   ];
 
    const navItemClass = ({ isActive }) =>
@@ -56,17 +54,17 @@ export default function Sidebar({ isOpen, onClose }) {
       )}
 
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-50 w-64 bg-slate-900 dark:bg-slate-900 border-r border-slate-800 flex flex-col transition-transform duration-300 ease-in-out lg:translate-x-0 ${
+        className={`fixed top-0 bottom-0 left-0 z-50 w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col transition-transform duration-300 ease-in-out lg:translate-x-0 ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        <div className="h-16 flex items-center justify-between px-5 border-b border-slate-800 shrink-0">
+        <div className="h-16 flex items-center justify-between px-5 border-b border-slate-200 dark:border-slate-800 shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white shadow-md shadow-emerald-900/30">
               <Dumbbell size={20} />
             </div>
             <div>
-              <span className="font-extrabold text-base tracking-tight text-white leading-none block">
+              <span className="font-extrabold text-base tracking-tight text-slate-900 dark:text-white leading-none block">
                 PowerFit <span className="text-emerald-400">GYM</span>
               </span>
               <span className="text-[10px] text-slate-400 font-medium tracking-wide uppercase">
@@ -84,7 +82,7 @@ export default function Sidebar({ isOpen, onClose }) {
 
         <div className="flex-1 overflow-y-auto px-3.5 py-4 space-y-6">
           <div>
-            <span className="px-3 text-[10px] font-bold text-slate-300 uppercase tracking-widest block mb-2">
+            <span className="px-3 text-[10px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-widest block mb-2">
               Gestión Operativa
             </span>
             <nav className="space-y-1">
@@ -173,3 +171,4 @@ export default function Sidebar({ isOpen, onClose }) {
     </>
   );
 }
+

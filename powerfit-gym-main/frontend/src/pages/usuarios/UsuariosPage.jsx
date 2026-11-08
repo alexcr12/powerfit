@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { obtenerMensajeError } from '../../utils/obtenerMensajeError';
 import { UserCog, UserPlus, Edit2, ShieldCheck, UserCheck } from 'lucide-react';
 import { usuariosService } from '../../api/usuariosService';
 import { useToast } from '../../context/ToastContext';
@@ -33,8 +34,9 @@ export default function UsuariosPage() {
       setError(null);
       const data = await usuariosService.getAll();
       setUsuarios(data);
-    } catch {
-      setError('Error al consultar usuarios del sistema.');
+    } catch (error) {
+      setError(obtenerMensajeError(error));
+      addToast(obtenerMensajeError(error), 'error');
     } finally {
       setLoading(false);
     }
@@ -93,8 +95,8 @@ export default function UsuariosPage() {
       }
       setIsModalOpen(false);
       loadUsuarios();
-    } catch {
-      addToast('Error al guardar usuario.', 'error');
+    } catch (error) {
+      addToast(obtenerMensajeError(error), 'error');
     } finally {
       setSaving(false);
     }
@@ -249,3 +251,8 @@ export default function UsuariosPage() {
     </div>
   );
 }
+
+
+
+
+

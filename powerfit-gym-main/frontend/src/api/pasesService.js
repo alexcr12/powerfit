@@ -1,17 +1,25 @@
 import api from './axiosInstance';
 
+const normalizar = (pase) => ({
+  ...pase,
+  socio_id: pase.socio?.id ?? pase.socio_id ?? pase.socioId,
+  nombre_inv: pase.nombreInv ?? pase.nombre_inv,
+  fecha_uso: pase.fechaUso ?? pase.fecha_uso,
+});
+
 export const pasesService = {
-  getAll: async () => {
-    const res = await api.get('/pases_invitado');
-    return res.data;
-  },
+  getAll: async () => (await api.get('/pases_invitado')).data.map(normalizar),
 
   getBySocioId: async (socioId) => {
     const res = await api.get('/pases_invitado', {
       params: { socio_id: Number(socioId) },
     });
-    return res.data;
+    return res.data.map(normalizar);
   },
+
+  getDisponibles: async (socioId, fecha) => (await api.get('/pases_invitado/disponibles', {
+    params: { socio_id: Number(socioId), fecha },
+  })).data,
 
   // RF17: Generar pase de invitado
   create: async ({ socioId, nombreInv, fechaUso }) => {

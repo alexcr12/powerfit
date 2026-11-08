@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { obtenerMensajeError } from '../../utils/obtenerMensajeError';
 import { Link } from 'react-router-dom';
 import { CalendarCheck, Plus, Edit2, Trash2, MapPin, Clock, Calendar } from 'lucide-react';
+import { API_BASE_URL } from '../../api/axiosInstance';
 import { asistenciasService } from '../../api/asistenciasService';
 import { sociosService } from '../../api/sociosService';
 import { useToast } from '../../context/ToastContext';
@@ -40,7 +42,7 @@ export default function AsistenciasPage() {
 
   useEffect(() => {
     const client = new Client({
-      webSocketFactory: () => new SockJS('http://localhost:8080/ws'),
+      webSocketFactory: () => new SockJS(`${API_BASE_URL}/ws`),
       reconnectDelay: 5000, 
       onConnect: () => {
         client.subscribe('/topic/asistencias', (message) => {
@@ -76,8 +78,9 @@ export default function AsistenciasPage() {
       ]);
       setAsistencias(asistData);
       setSocios(socData);
-    } catch {
-      setError('Error al consultar el registro de asistencias.');
+    } catch (error) {
+      setError(obtenerMensajeError(error));
+      addToast(obtenerMensajeError(error), 'error');
     } finally {
       setLoading(false);
     }
@@ -109,8 +112,8 @@ export default function AsistenciasPage() {
       addToast('Asistencia corregida exitosamente.', 'success');
       setIsModalOpen(false);
       loadData();
-    } catch {
-      addToast('Error al corregir asistencia.', 'error');
+    } catch (error) {
+      addToast(obtenerMensajeError(error), 'error');
     } finally {
       setSaving(false);
     }
@@ -126,8 +129,8 @@ export default function AsistenciasPage() {
       addToast('Registro de asistencia eliminado físicamente.', 'info');
       setConfirmDelete({ isOpen: false, asistencia: null, loading: false });
       loadData();
-    } catch {
-      addToast('Error al eliminar asistencia.', 'error');
+    } catch (error) {
+      addToast(obtenerMensajeError(error), 'error');
       setConfirmDelete((prev) => ({ ...prev, loading: false }));
     }
   };
@@ -291,3 +294,8 @@ export default function AsistenciasPage() {
     </div>
   );
 }
+
+
+
+
+

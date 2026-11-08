@@ -6,8 +6,8 @@ export const sociosService = {
     const res = await api.get('/socios');
     return res.data.map(s => ({
       ...s,
-      fecha_registro: s.fechaRegistro || s.fecha_registro, 
-       registrado_por: s.registradoPor || s.registrado_por,
+      fecha_registro: s.fechaRegistro || s.fecha_registro,
+      registrado_por: s.registrado_por?.id ?? s.registrado_por ?? s.registradoPor,
       activo: s.activo ?? false
     }));
   },
@@ -18,7 +18,7 @@ export const sociosService = {
     return {
       ...s,
       fecha_registro: s.fechaRegistro || s.fecha_registro,
-       registrado_por: s.registradoPor || s.registrado_por,
+      registrado_por: s.registrado_por?.id ?? s.registrado_por ?? s.registradoPor,
       activo: s.activo ?? false
     };
   },
@@ -26,8 +26,10 @@ export const sociosService = {
   // RF01: Registrar socio
   create: async (socioData) => {
     const payload = {
-      ...socioData,
-      fechaRegistro: new Date().toISOString().split('T')[0], 
+      nombre: socioData.nombre,
+      documento: socioData.documento,
+      telefono: socioData.telefono || null,
+      fechaRegistro: socioData.fechaRegistro || socioData.fecha_registro || new Date().toISOString().split('T')[0],
       activo: true,
     };
     const res = await api.post('/socios', payload);
@@ -37,8 +39,11 @@ export const sociosService = {
   // RF03: Editar socio
   update: async (id, socioData) => {
     const payload = {
-      ...socioData,
-      fechaRegistro: socioData.fechaRegistro || socioData.fecha_registro // 🔥 camelCase
+      nombre: socioData.nombre,
+      documento: socioData.documento,
+      telefono: socioData.telefono,
+      fechaRegistro: socioData.fechaRegistro || socioData.fecha_registro,
+      activo: socioData.activo,
     };
     const res = await api.patch(`/socios/${id}`, payload);
     return res.data;

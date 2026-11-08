@@ -7,7 +7,7 @@ export default function MainLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-slate-950 flex flex-col lg:pl-64">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col lg:pl-64">
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <div className="flex-1 flex flex-col min-w-0">
         <Navbar onToggleSidebar={() => setSidebarOpen(true)} />
@@ -18,3 +18,4 @@ export default function MainLayout() {
     </div>
   );
 }
+

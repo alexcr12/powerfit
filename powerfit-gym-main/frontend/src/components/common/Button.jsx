@@ -23,10 +23,10 @@ export default function Button({
 
   const variantStyles = {
     primary: "bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-950/40 border border-emerald-500/30",
-    secondary: "bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700",
+    secondary: "bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-200 dark:border-slate-700",
     danger: "bg-red-600 hover:bg-red-500 text-white shadow-lg shadow-red-950/40 border border-red-500/30",
-    outline: "bg-transparent hover:bg-slate-800 text-slate-300 border border-slate-700",
-    ghost: "bg-transparent hover:bg-slate-800/60 text-slate-400 hover:text-slate-200",
+    outline: "bg-transparent hover:bg-slate-100 text-slate-700 border border-slate-300 dark:hover:bg-slate-800 dark:text-slate-300 dark:border-slate-700",
+    ghost: "bg-transparent hover:bg-slate-100 text-slate-600 hover:text-slate-900 dark:hover:bg-slate-800/60 dark:text-slate-400 dark:hover:text-slate-200",
   };
 
   return (
@@ -51,3 +51,4 @@ export default function Button({
     </button>
   );
 }
+
