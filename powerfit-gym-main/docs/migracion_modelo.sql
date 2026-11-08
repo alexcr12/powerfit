@@ -1,0 +1,15 @@
+SET FOREIGN_KEY_CHECKS = 0;
+
+DROP TABLE IF EXISTS membresia_producto;
+DROP TABLE IF EXISTS categoria_beneficios_base;
+
+ALTER TABLE categorias DROP COLUMN precio;
+ALTER TABLE productos DROP COLUMN precio_base, DROP COLUMN sede;
+ALTER TABLE productos ADD COLUMN requiere_asistencia BOOLEAN NOT NULL DEFAULT FALSE;
+ALTER TABLE membresias DROP COLUMN estado, DROP COLUMN es_primera;
+ALTER TABLE membresias ADD COLUMN categoria_id BIGINT NOT NULL;
+ALTER TABLE membresias ADD COLUMN activo BOOLEAN NOT NULL DEFAULT TRUE;
+ALTER TABLE asistencias DROP COLUMN sede;
+ALTER TABLE asistencias ADD COLUMN producto_id BIGINT NOT NULL;
+
+SET FOREIGN_KEY_CHECKS = 1;

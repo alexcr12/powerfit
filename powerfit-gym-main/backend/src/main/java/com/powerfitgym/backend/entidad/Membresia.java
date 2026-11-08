@@ -2,6 +2,7 @@ package com.powerfitgym.backend.entidad;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
@@ -24,6 +25,11 @@ public class Membresia {
     @JoinColumn(name = "socio_id", nullable = false)
     private Socio socio;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "categoria_id", nullable = false)
+    @JsonProperty("categoria_id")
+    private Categoria categoria;
+
     @JsonFormat(pattern = "yyyy-MM-dd")
     @Column(name = "fecha_inicio", nullable = false)
     private LocalDate fechaInicio;
@@ -35,25 +41,14 @@ public class Membresia {
     @Column(name = "monto_total", nullable = false, precision = 10, scale = 2)
     private BigDecimal montoTotal;
 
-    @Column(nullable = false, length = 30)
-    private String estado = "activa";
-
-    @Column(name = "es_primera", nullable = false)
-    private Boolean esPrimera = false;
+    @Column(nullable = false)
+    private Boolean activo = true;
 
     @PrePersist
     public void prePersist() {
         if (this.fechaInicio == null) {
             this.fechaInicio = LocalDate.now();
         }
-        if (this.fechaFin == null) {
-            this.fechaFin = this.fechaInicio.plusMonths(1);
-        }
-        if (this.esPrimera == null) {
-            this.esPrimera = false;
-        }
-        if (this.estado == null || this.estado.isBlank()) {
-            this.estado = "activa";
-        }
+        this.fechaFin = this.fechaInicio.plusMonths(1);
     }
 }

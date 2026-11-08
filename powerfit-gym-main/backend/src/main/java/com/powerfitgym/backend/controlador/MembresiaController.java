@@ -26,13 +26,13 @@ public class MembresiaController {
     @GetMapping
     public ResponseEntity<List<Membresia>> listar(
             @RequestParam(required = false, name = "socio_id") Long socioId,
-            @RequestParam(required = false) String estado) {
+            @RequestParam(required = false) Boolean activo) {
 
         if (socioId != null) {
             return ResponseEntity.ok(membresiaService.listarPorSocio(socioId));
         }
-        if (estado != null && !estado.isBlank()) {
-            return ResponseEntity.ok(membresiaService.listarPorEstado(estado));
+        if (activo != null) {
+            return ResponseEntity.ok(membresiaService.listarPorActivo(activo));
         }
         return ResponseEntity.ok(membresiaService.listarTodas());
     }
@@ -57,27 +57,24 @@ public class MembresiaController {
         LocalDate fechaInicio = parseFecha(
                 body.get("fechaInicio") != null ? body.get("fechaInicio") : body.get("fecha_inicio"),
                 LocalDate.now());
-        LocalDate fechaFin = parseFecha(
-                body.get("fechaFin") != null ? body.get("fechaFin") : body.get("fecha_fin"),
-                fechaInicio.plusMonths(1));
         m.setFechaInicio(fechaInicio);
-        m.setFechaFin(fechaFin);
 
         Object monto = body.get("montoTotal") != null ? body.get("montoTotal") : body.get("monto_total");
         m.setMontoTotal(parseBigDecimal(monto, BigDecimal.ZERO));
 
-        Object estadoObj = body.get("estado");
-        m.setEstado(estadoObj != null && !estadoObj.toString().isBlank()
-                ? estadoObj.toString()
-                : "activa");
-
-        
-        Object primera = body.get("esPrimera") != null ? body.get("esPrimera") : body.get("es_primera");
-        m.setEsPrimera(parseBoolean(primera, false));
+        Object activo = body.get("activo");
+        m.setActivo(activo == null || parseBoolean(activo, true));
 
         Socio socioRef = new Socio();
         socioRef.setId(idSocio);
         m.setSocio(socioRef);
+
+        Object categoriaId = body.get("categoria_id") != null ? body.get("categoria_id") : body.get("categoriaId");
+        if (categoriaId == null && body.get("categoria") instanceof Map<?, ?> categoriaMap) categoriaId = categoriaMap.get("id");
+        if (categoriaId == null) throw new IllegalArgumentException("La categoria_id es obligatoria para registrar la membresía.");
+        com.powerfitgym.backend.entidad.Categoria categoria = new com.powerfitgym.backend.entidad.Categoria();
+        categoria.setId(convertirALong(categoriaId));
+        m.setCategoria(categoria);
 
         return new ResponseEntity<>(membresiaService.crear(m), HttpStatus.CREATED);
     }

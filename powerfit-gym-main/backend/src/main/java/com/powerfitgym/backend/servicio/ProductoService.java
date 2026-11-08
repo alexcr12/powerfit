@@ -51,10 +51,8 @@ public class ProductoService {
 
         if (datos.getNombre() != null)
             producto.setNombre(datos.getNombre());
-        if (datos.getSede() != null)
-            producto.setSede(datos.getSede());
-        if (datos.getPrecioBase() != null)
-            producto.setPrecioBase(datos.getPrecioBase());
+        if (datos.getRequiereAsistencia() != null)
+            producto.setRequiereAsistencia(datos.getRequiereAsistencia());
         if (datos.getActivo() != null)
             producto.setActivo(datos.getActivo());
 

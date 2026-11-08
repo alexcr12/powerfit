@@ -2,8 +2,10 @@ package com.powerfitgym.backend.servicio;
 
 import com.powerfitgym.backend.entidad.Asistencia;
 import com.powerfitgym.backend.entidad.Socio;
+import com.powerfitgym.backend.entidad.Producto;
 import com.powerfitgym.backend.repositorio.AsistenciaRepository;
 import com.powerfitgym.backend.repositorio.SocioRepository;
+import com.powerfitgym.backend.repositorio.ProductoRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -14,10 +16,12 @@ public class AsistenciaService {
 
     private final AsistenciaRepository asistenciaRepository;
     private final SocioRepository socioRepository;
+    private final ProductoRepository productoRepository;
 
-    public AsistenciaService(AsistenciaRepository asistenciaRepository, SocioRepository socioRepository) {
+    public AsistenciaService(AsistenciaRepository asistenciaRepository, SocioRepository socioRepository, ProductoRepository productoRepository) {
         this.asistenciaRepository = asistenciaRepository;
         this.socioRepository = socioRepository;
+        this.productoRepository = productoRepository;
     }
 
     public List<Asistencia> listarTodas() {
@@ -32,6 +36,8 @@ public class AsistenciaService {
         if (asistencia.getFechaHora() == null) {
             asistencia.setFechaHora(LocalDateTime.now());
         }
+        if (asistencia.getProducto() == null || asistencia.getProducto().getId() == null) throw new IllegalArgumentException("El producto_id es obligatorio.");
+        asistencia.setProducto(productoRepository.findById(asistencia.getProducto().getId()).orElseThrow(() -> new RuntimeException("Producto no encontrado")));
         return asistenciaRepository.save(asistencia);
     }
 
@@ -45,8 +51,8 @@ public class AsistenciaService {
 
         if (datos.getFechaHora() != null)
             a.setFechaHora(datos.getFechaHora());
-        if (datos.getSede() != null)
-            a.setSede(datos.getSede());
+        if (datos.getProducto() != null && datos.getProducto().getId() != null)
+            a.setProducto(productoRepository.findById(datos.getProducto().getId()).orElseThrow(() -> new RuntimeException("Producto no encontrado")));
 
         if (datos.getSocio() != null && datos.getSocio().getId() != null) {
             Socio socioReal = socioRepository.findById(datos.getSocio().getId())

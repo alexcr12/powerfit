@@ -82,11 +82,12 @@ public class AsistenciaController {
             asistencia.setFechaHora(LocalDateTime.now());
         }
 
-        if (body.get("sede") != null) {
-            asistencia.setSede(body.get("sede").toString());
-        } else {
-            asistencia.setSede("Sede Central");
-        }
+        Object productoId = body.get("producto_id") != null ? body.get("producto_id") : body.get("productoId");
+        if (productoId == null && body.get("producto") instanceof Map<?, ?> pm) productoId = pm.get("id");
+        if (productoId == null) throw new IllegalArgumentException("El producto_id es obligatorio.");
+        com.powerfitgym.backend.entidad.Producto producto = new com.powerfitgym.backend.entidad.Producto();
+        producto.setId(Long.valueOf(productoId.toString()));
+        asistencia.setProducto(producto);
 
         Asistencia nuevaAsistencia = asistenciaService.registrar(asistencia);
         messagingTemplate.convertAndSend("/topic/asistencias", nuevaAsistencia);
@@ -126,8 +127,12 @@ public class AsistenciaController {
             }
         }
 
-        if (body.get("sede") != null) {
-            datos.setSede(body.get("sede").toString());
+        Object productoId = body.get("producto_id") != null ? body.get("producto_id") : body.get("productoId");
+        if (productoId == null && body.get("producto") instanceof Map<?, ?> pm) productoId = pm.get("id");
+        if (productoId != null) {
+            com.powerfitgym.backend.entidad.Producto pRef = new com.powerfitgym.backend.entidad.Producto();
+            pRef.setId(Long.valueOf(productoId.toString()));
+            datos.setProducto(pRef);
         }
 
         Object socioIdObj = body.get("socio_id") != null ? body.get("socio_id") : body.get("socioId");

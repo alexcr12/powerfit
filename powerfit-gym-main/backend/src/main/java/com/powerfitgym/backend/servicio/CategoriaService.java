@@ -41,10 +41,6 @@ public class CategoriaService {
         if (datosActualizados.getActivo() != null)
             categoria.setActivo(datosActualizados.getActivo());
 
-        if (datosActualizados.getBeneficiosBase() != null) {
-            categoria.setBeneficiosBase(datosActualizados.getBeneficiosBase());
-        }
-
         return categoriaRepository.save(categoria);
     }
 

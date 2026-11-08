@@ -7,7 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -47,8 +46,8 @@ public class ProductoController {
 
         Producto producto = new Producto();
         producto.setNombre(body.get("nombre").toString());
-        producto.setSede(body.get("sede").toString());
-        producto.setPrecioBase(new BigDecimal(body.get("precio_base").toString()));
+        Object requiereAsistencia = body.get("requiere_asistencia") != null ? body.get("requiere_asistencia") : body.get("requiereAsistencia");
+        producto.setRequiereAsistencia(requiereAsistencia != null && Boolean.parseBoolean(requiereAsistencia.toString()));
 
         Object activo = body.get("activo");
         producto.setActivo(activo == null || Boolean.parseBoolean(activo.toString()));
@@ -71,12 +70,9 @@ public class ProductoController {
         Producto datos = new Producto();
         if (body.get("nombre") != null)
             datos.setNombre(body.get("nombre").toString());
-        if (body.get("sede") != null)
-            datos.setSede(body.get("sede").toString());
-        if (body.get("precio_base") != null)
-            datos.setPrecioBase(new BigDecimal(body.get("precio_base").toString()));
-        if (body.get("precioBase") != null)
-            datos.setPrecioBase(new BigDecimal(body.get("precioBase").toString()));
+        Object requiereAsistencia = body.get("requiere_asistencia") != null ? body.get("requiere_asistencia") : body.get("requiereAsistencia");
+        if (requiereAsistencia != null)
+            datos.setRequiereAsistencia(Boolean.parseBoolean(requiereAsistencia.toString()));
         if (body.get("activo") != null)
             datos.setActivo(Boolean.parseBoolean(body.get("activo").toString()));
 

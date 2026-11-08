@@ -14,18 +14,15 @@ public class SocioService {
     private final SocioRepository socioRepository;
     private final AsistenciaRepository asistenciaRepository;
     private final MembresiaRepository membresiaRepository;
-    private final MembresiaProductoRepository membresiaProductoRepository;
     private final PaseInvitadoRepository paseInvitadoRepository;
 
     public SocioService(SocioRepository socioRepository,
             AsistenciaRepository asistenciaRepository,
             MembresiaRepository membresiaRepository,
-            MembresiaProductoRepository membresiaProductoRepository,
             PaseInvitadoRepository paseInvitadoRepository) {
         this.socioRepository = socioRepository;
         this.asistenciaRepository = asistenciaRepository;
         this.membresiaRepository = membresiaRepository;
-        this.membresiaProductoRepository = membresiaProductoRepository;
         this.paseInvitadoRepository = paseInvitadoRepository;
     }
 
@@ -79,12 +76,6 @@ public class SocioService {
 
         List<Membresia> membresias = membresiaRepository.findBySocioId(id);
         if (membresias != null && !membresias.isEmpty()) {
-            for (Membresia m : membresias) {
-                List<MembresiaProducto> productos = membresiaProductoRepository.findByMembresiaId(m.getId());
-                if (productos != null && !productos.isEmpty()) {
-                    membresiaProductoRepository.deleteAll(productos);
-                }
-            }
             membresiaRepository.deleteAll(membresias);
         }
 

@@ -1,6 +1,7 @@
 package com.powerfitgym.backend.entidad;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import java.time.LocalDateTime;
 
@@ -22,8 +23,10 @@ public class Asistencia {
     @Column(name = "fecha_hora", nullable = false)
     private LocalDateTime fechaHora;
 
-    @Column(nullable = false, length = 80)
-    private String sede;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "producto_id", nullable = false)
+    @JsonProperty("producto_id")
+    private Producto producto;
 
     public Socio getSocio() {
         return socio;
