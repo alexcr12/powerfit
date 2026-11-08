@@ -23,12 +23,8 @@ public class ProductoService {
         return productoRepository.findAll();
     }
 
-    public List<Producto> listarActivos() {
-        return productoRepository.findByActivoTrue();
-    }
-
-    public List<Producto> listarPorCategoria(Long categoriaId) {
-        return productoRepository.findByCategoriaId(categoriaId);
+    public List<Producto> listarConFiltros(Long categoriaId, Boolean activo) {
+        return productoRepository.buscarConFiltros(categoriaId, activo);
     }
 
     public Producto buscarPorId(Long id) {
@@ -66,6 +62,8 @@ public class ProductoService {
     }
 
     public void eliminar(Long id) {
-        productoRepository.deleteById(id);
+        Producto producto = buscarPorId(id);
+        producto.setActivo(false);
+        productoRepository.save(producto);
     }
 }

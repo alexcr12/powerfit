@@ -25,15 +25,9 @@ public class MembresiaController {
     @GetMapping
     public ResponseEntity<List<Membresia>> listar(
             @RequestParam(required = false, name = "socio_id") Long socioId,
-            @RequestParam(required = false) Boolean activo) {
-
-        if (socioId != null) {
-            return ResponseEntity.ok(membresiaService.listarPorSocio(socioId));
-        }
-        if (activo != null) {
-            return ResponseEntity.ok(membresiaService.listarPorActivo(activo));
-        }
-        return ResponseEntity.ok(membresiaService.listarTodas());
+            @RequestParam(required = false) Boolean activo,
+            @RequestParam(required = false) Boolean vigente) {
+        return ResponseEntity.ok(membresiaService.listarConFiltros(socioId, activo, vigente));
     }
 
     @GetMapping("/{id}")
@@ -51,16 +45,9 @@ public class MembresiaController {
 
         Membresia m = new Membresia();
 
-        LocalDate fechaInicio = parseFecha(
-                body.get("fechaInicio") != null ? body.get("fechaInicio") : body.get("fecha_inicio"),
-                LocalDate.now());
+        Object inicio = body.get("fechaInicio") != null ? body.get("fechaInicio") : body.get("fecha_inicio");
+        LocalDate fechaInicio = inicio == null ? LocalDate.now() : parseFecha(inicio);
         m.setFechaInicio(fechaInicio);
-
-        Object monto = body.get("montoTotal") != null ? body.get("montoTotal") : body.get("monto_total");
-        m.setMontoTotal(parseBigDecimal(monto, BigDecimal.ZERO));
-
-        Object activo = body.get("activo");
-        m.setActivo(activo == null || parseBoolean(activo, true));
 
         Socio socioRef = new Socio();
         socioRef.setId(idSocio);
@@ -77,8 +64,16 @@ public class MembresiaController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Membresia> actualizar(@PathVariable Long id, @RequestBody Membresia membresia) {
-        return ResponseEntity.ok(membresiaService.actualizar(id, membresia));
+    public ResponseEntity<Membresia> actualizar(@PathVariable Long id, @RequestBody Map<String, Object> body) {
+        Membresia datos = new Membresia();
+        Object inicio = body.containsKey("fecha_inicio") ? body.get("fecha_inicio") : body.get("fechaInicio");
+        Object fin = body.containsKey("fecha_fin") ? body.get("fecha_fin") : body.get("fechaFin");
+        Object monto = body.containsKey("monto_total") ? body.get("monto_total") : body.get("montoTotal");
+        if (inicio != null) datos.setFechaInicio(parseFecha(inicio));
+        if (fin != null) datos.setFechaFin(parseFecha(fin));
+        if (monto != null) datos.setMontoTotal(parseBigDecimal(monto));
+        if (body.get("activo") != null) datos.setActivo(parseBoolean(body.get("activo"), null));
+        return ResponseEntity.ok(membresiaService.actualizar(id, datos));
     }
 
     @DeleteMapping("/{id}")
@@ -115,23 +110,19 @@ public class MembresiaController {
         }
     }
 
-    private LocalDate parseFecha(Object valor, LocalDate porDefecto) {
-        if (valor == null)
-            return porDefecto;
+    private LocalDate parseFecha(Object valor) {
         try {
             return LocalDate.parse(valor.toString());
-        } catch (Exception e) {
-            return porDefecto;
+        } catch (RuntimeException e) {
+            throw new IllegalArgumentException("Formato de fecha inválido: " + valor);
         }
     }
 
-    private BigDecimal parseBigDecimal(Object valor, BigDecimal porDefecto) {
-        if (valor == null)
-            return porDefecto;
+    private BigDecimal parseBigDecimal(Object valor) {
         try {
             return new BigDecimal(valor.toString());
-        } catch (Exception e) {
-            return porDefecto;
+        } catch (RuntimeException e) {
+            throw new IllegalArgumentException("monto_total debe ser un número válido.");
         }
     }
 

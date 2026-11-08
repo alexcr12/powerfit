@@ -22,8 +22,21 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<Map<String, String>> manejarRuntime(RuntimeException exception) {
-        if (exception.getMessage() != null && exception.getMessage().toLowerCase().contains("no encontrado"))
+        if (exception.getMessage() != null) {
+            String mensaje = exception.getMessage().toLowerCase(java.util.Locale.ROOT);
+            if (mensaje.contains("no encontrado") || mensaje.contains("no encontrada"))
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("mensaje", exception.getMessage()));
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("mensaje", exception.getMessage() == null ? "Error interno" : exception.getMessage()));
+        }
+        return errorInterno();
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Map<String, String>> manejarExcepcion(Exception exception) {
+        return errorInterno();
+    }
+
+    private ResponseEntity<Map<String, String>> errorInterno() {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("mensaje", "Error interno del servidor"));
     }
 }

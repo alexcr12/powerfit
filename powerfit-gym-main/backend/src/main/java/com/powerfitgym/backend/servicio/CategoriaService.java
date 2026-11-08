@@ -19,8 +19,8 @@ public class CategoriaService {
         return categoriaRepository.findAll();
     }
 
-    public List<Categoria> listarActivas() {
-        return categoriaRepository.findByActivoTrue();
+    public List<Categoria> listarPorActivo(Boolean activo) {
+        return activo == null ? categoriaRepository.findAll() : categoriaRepository.findByActivo(activo);
     }
 
     public Categoria buscarPorId(Long id) {
@@ -45,6 +45,8 @@ public class CategoriaService {
     }
 
     public void eliminar(Long id) {
-        categoriaRepository.deleteById(id);
+        Categoria categoria = buscarPorId(id);
+        categoria.setActivo(false);
+        categoriaRepository.save(categoria);
     }
 }

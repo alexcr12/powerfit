@@ -19,10 +19,7 @@ public class CategoriaController {
 
     @GetMapping
     public ResponseEntity<List<Categoria>> listar(@RequestParam(required = false) Boolean activo) {
-        if (Boolean.TRUE.equals(activo)) {
-            return ResponseEntity.ok(categoriaService.listarActivas());
-        }
-        return ResponseEntity.ok(categoriaService.listarTodas());
+        return ResponseEntity.ok(categoriaService.listarPorActivo(activo));
     }
 
     @GetMapping("/{id}")

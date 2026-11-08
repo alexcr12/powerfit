@@ -25,13 +25,7 @@ public class ProductoController {
             @RequestParam(required = false, name = "categoria_id") Long categoriaId,
             @RequestParam(required = false) Boolean activo) {
 
-        if (categoriaId != null) {
-            return ResponseEntity.ok(productoService.listarPorCategoria(categoriaId));
-        }
-        if (activo != null && activo) {
-            return ResponseEntity.ok(productoService.listarActivos());
-        }
-        return ResponseEntity.ok(productoService.listarTodos());
+        return ResponseEntity.ok(productoService.listarConFiltros(categoriaId, activo));
     }
 
     @GetMapping("/{id}")
