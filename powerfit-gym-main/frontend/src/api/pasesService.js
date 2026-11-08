@@ -1,5 +1,6 @@
 import api from './axiosInstance';
 
+// Adapta los campos del pase a los nombres que usa el frontend.
 const normalizar = (pase) => ({
   ...pase,
   socio_id: pase.socio?.id ?? pase.socio_id ?? pase.socioId,
@@ -11,9 +12,7 @@ export const pasesService = {
   getAll: async () => (await api.get('/pases_invitado')).data.map(normalizar),
 
   getBySocioId: async (socioId) => {
-    const res = await api.get('/pases_invitado', {
-      params: { socio_id: Number(socioId) },
-    });
+    const res = await api.get('/pases_invitado', { params: { socio_id: Number(socioId) } });
     return res.data.map(normalizar);
   },
 
@@ -21,7 +20,13 @@ export const pasesService = {
     params: { socio_id: Number(socioId), fecha },
   })).data,
 
-  // RF17: Generar pase de invitado
+  // Edita el nombre o la fecha de uso del pase.
+  actualizar: async (id, datos) => normalizar((await api.patch(`/pases_invitado/${id}`, datos)).data),
+
+  // Anula el pase con la baja lógica del backend.
+  anular: async (id) => (await api.delete(`/pases_invitado/${id}`)).data,
+
+  // Genera un pase para el socio seleccionado.
   create: async ({ socioId, nombreInv, fechaUso }) => {
     const payload = {
       socio_id: Number(socioId),
@@ -29,7 +34,6 @@ export const pasesService = {
       fecha_uso: fechaUso || new Date().toISOString().split('T')[0],
       activo: true,
     };
-    const res = await api.post('/pases_invitado', payload);
-    return res.data;
+    return (await api.post('/pases_invitado', payload)).data;
   },
 };

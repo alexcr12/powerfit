@@ -1,5 +1,6 @@
 import api from './axiosInstance';
 
+// Adapta las relaciones y fechas que devuelve el backend.
 const normalizar = (membresia) => ({
   ...membresia,
   socio_id: membresia.socio?.id ?? membresia.socio_id ?? membresia.socioId,
@@ -18,6 +19,7 @@ export const membresiasService = {
 
   getById: async (id) => normalizar((await api.get(`/membresias/${id}`)).data),
 
+  // Contrata usando los IDs del socio y la categoría.
   create: async ({ socioId, categoriaId, fechaInicio }) => {
     const payload = {
       socio_id: Number(socioId),
@@ -27,9 +29,9 @@ export const membresiasService = {
     return normalizar((await api.post('/membresias', payload)).data);
   },
 
-  update: async (id, changes) => normalizar((await api.patch(`/membresias/${id}`, changes)).data),
+  // Actualiza los datos permitidos de la membresía.
+  actualizar: async (id, datos) => normalizar((await api.patch(`/membresias/${id}`, datos)).data),
 
-  cancel: async (id) => normalizar((await api.patch(`/membresias/${id}`, { activo: false })).data),
-
+  // Cancela la membresía con la baja lógica del backend.
   delete: async (id) => (await api.delete(`/membresias/${id}`)).data,
 };
