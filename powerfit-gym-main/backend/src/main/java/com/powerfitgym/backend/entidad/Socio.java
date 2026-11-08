@@ -3,7 +3,6 @@ package com.powerfitgym.backend.entidad;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -51,15 +50,15 @@ public class Socio {
 
     @Column(nullable = false)
     private Boolean activo = true;
-    @OneToMany(mappedBy = "socio", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "socio")
     @JsonIgnore // Para que no entre en un bucle infinito al pedir los datos
-    private List<Membresia> membresias = new ArrayList<>();
+    private List<Membresia> membresias;
 
-    @OneToMany(mappedBy = "socio", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "socio")
     @JsonIgnore
-    private List<Asistencia> asistencias = new ArrayList<>();
+    private List<Asistencia> asistencias;
 
-    @OneToMany(mappedBy = "socio", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "socio")
     @JsonIgnore
-    private List<PaseInvitado> pasesInvitado = new ArrayList<>();
+    private List<PaseInvitado> pasesInvitado;
 }

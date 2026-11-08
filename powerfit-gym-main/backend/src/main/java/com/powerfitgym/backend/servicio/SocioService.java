@@ -3,7 +3,6 @@ package com.powerfitgym.backend.servicio;
 import com.powerfitgym.backend.entidad.*;
 import com.powerfitgym.backend.repositorio.*;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import com.powerfitgym.backend.repositorio.UsuarioRepository;
@@ -15,20 +14,10 @@ import java.util.Map;
 public class SocioService {
 
     private final SocioRepository socioRepository;
-    private final AsistenciaRepository asistenciaRepository;
-    private final MembresiaRepository membresiaRepository;
-    private final PaseInvitadoRepository paseInvitadoRepository;
     private final UsuarioRepository usuarioRepository;
 
-    public SocioService(SocioRepository socioRepository,
-            AsistenciaRepository asistenciaRepository,
-            MembresiaRepository membresiaRepository,
-            PaseInvitadoRepository paseInvitadoRepository,
-            UsuarioRepository usuarioRepository) {
+    public SocioService(SocioRepository socioRepository, UsuarioRepository usuarioRepository) {
         this.socioRepository = socioRepository;
-        this.asistenciaRepository = asistenciaRepository;
-        this.membresiaRepository = membresiaRepository;
-        this.paseInvitadoRepository = paseInvitadoRepository;
         this.usuarioRepository = usuarioRepository;
     }
 
@@ -80,23 +69,9 @@ public class SocioService {
         );
     }
 
-    @Transactional
     public void eliminar(Long id) {
-        List<Asistencia> asistencias = asistenciaRepository.findBySocioId(id);
-        if (asistencias != null && !asistencias.isEmpty()) {
-            asistenciaRepository.deleteAll(asistencias);
-        }
-
-        List<PaseInvitado> pases = paseInvitadoRepository.findBySocioId(id);
-        if (pases != null && !pases.isEmpty()) {
-            paseInvitadoRepository.deleteAll(pases);
-        }
-
-        List<Membresia> membresias = membresiaRepository.findBySocioId(id);
-        if (membresias != null && !membresias.isEmpty()) {
-            membresiaRepository.deleteAll(membresias);
-        }
-
-        socioRepository.deleteById(id);
+        Socio socio = buscarPorId(id);
+        socio.setActivo(false);
+        socioRepository.save(socio);
     }
 }

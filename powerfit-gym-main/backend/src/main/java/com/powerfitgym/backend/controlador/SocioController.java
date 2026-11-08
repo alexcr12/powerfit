@@ -34,16 +34,11 @@ public class SocioController {
 
         if (documento != null && !documento.isBlank()) {
             return socioRepository.findByDocumento(documento)
+                    .filter(socio -> activo == null || activo.equals(socio.getActivo()))
                     .map(socio -> ResponseEntity.ok(List.of(socio)))
                     .orElse(ResponseEntity.ok(List.of()));
         }
-
-        // 🔥 Buscamos directo en el repositorio (evitamos el error rojo)
-        if (activo != null && activo.equals(true)) {
-            return ResponseEntity.ok(socioRepository.findByActivoTrue());
-        }
-
-        // Este sí lo tienes en tu servicio
+        if (activo != null) return ResponseEntity.ok(socioRepository.findByActivo(activo));
         return ResponseEntity.ok(socioService.listarTodos());
     }
 

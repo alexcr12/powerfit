@@ -13,6 +13,7 @@ public interface SocioRepository extends JpaRepository<Socio, Long> {
     boolean existsByDocumento(String documento);
 
     List<Socio> findByActivoTrue();
+    List<Socio> findByActivo(Boolean activo);
 
     long countByFechaRegistroBetween(LocalDate inicio, LocalDate fin);
 
