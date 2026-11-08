@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { obtenerMensajeError } from '../../utils/obtenerMensajeError';
-import { UserPlus, Edit2, UserX, UserCheck, ShieldAlert, History } from 'lucide-react';
+import { UserPlus, Edit2, UserX, UserCheck, History } from 'lucide-react';
 import { sociosService } from '../../api/sociosService';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';

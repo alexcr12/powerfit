@@ -1,30 +1,15 @@
 import api from './axiosInstance';
 
 export const usuariosService = {
-    login: async (email, password) => {
-    const res = await api.post('/auth/login', { email, password });
-    return res.data; // { token, nombre, rol }
-  },
-  // Listar usuarios
-  getAll: async () => {
-    const res = await api.get('/usuarios');
-    return res.data;
-  },
+  // Lista los usuarios registrados.
+  listar: async () => (await api.get('/usuarios')).data,
 
-  getById: async (id) => {
-    const res = await api.get(`/usuarios/${id}`);
-    return res.data;
-  },
+  // Crea un usuario.
+  crear: async (datos) => (await api.post('/usuarios', datos)).data,
 
-  // RF05: Registrar usuario
-  create: async (usuarioData) => {
-    const res = await api.post('/usuarios', usuarioData);
-    return res.data;
-  },
+  // Actualiza los datos permitidos del usuario.
+  actualizar: async (id, datos) => (await api.patch(`/usuarios/${id}`, datos)).data,
 
-  // RF06: Editar usuario
-  update: async (id, usuarioData) => {
-    const res = await api.patch(`/usuarios/${id}`, usuarioData);
-    return res.data;
-  },
+  // Desactiva al usuario con baja lógica.
+  desactivar: async (id) => (await api.delete(`/usuarios/${id}`)).data,
 };

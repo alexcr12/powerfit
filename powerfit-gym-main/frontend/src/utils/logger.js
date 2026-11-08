@@ -7,7 +7,6 @@
  * - Peticiones y respuestas de la API (Axios interceptors)
  * - Inicio y cierre de sesión (AuthContext)
  * - Intentos bloqueados por permisos de rol (RoleRoute / ProtectedRoute)
- * - Validaciones y violaciones de reglas de negocio (businessRules)
  * - Excepciones y errores de red
  */
 
@@ -76,3 +75,4 @@ export const logger = {
   },
   getAll: getStoredLogs,
 };
+
