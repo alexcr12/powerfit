@@ -13,8 +13,10 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 public class MembresiaService {
     private final MembresiaRepository membresiaRepository;
     private final SocioRepository socioRepository;
@@ -67,7 +69,9 @@ public class MembresiaService {
         membresia.setFechaFin(fechaInicio.plusMonths(1));
         membresia.setMontoTotal(precioMembresia);
         membresia.setActivo(true);
-        return membresiaRepository.save(membresia);
+        Membresia guardada = membresiaRepository.save(membresia);
+        log.info("Membresía contratada id={} categoriaId={}", guardada.getId(), categoria.getId());
+        return guardada;
     }
 
     public Membresia actualizar(Long id, Membresia datos) {

@@ -21,8 +21,15 @@ public interface AsistenciaRepository extends JpaRepository<Asistencia, Long> {
 
     long countByProductoIdAndFechaHoraBetween(Long productoId, LocalDateTime inicio, LocalDateTime fin);
 
+    long countByFechaHoraBetween(LocalDateTime inicio, LocalDateTime fin);
+
     @Query("select a.producto.id as productoId, count(a.id) as total from Asistencia a " +
             "where a.fechaHora between :inicio and :fin group by a.producto.id")
     List<Object[]> contarPorProductoAgrupado(@Param("inicio") LocalDateTime inicio,
                                              @Param("fin") LocalDateTime fin);
+
+    @Query("select a.producto.id, a.producto.nombre, count(a.id) from Asistencia a " +
+            "where a.fechaHora between :inicio and :fin group by a.producto.id, a.producto.nombre")
+    List<Object[]> contarPorProductoYNombreAgrupado(@Param("inicio") LocalDateTime inicio,
+                                                     @Param("fin") LocalDateTime fin);
 }

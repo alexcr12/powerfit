@@ -19,8 +19,10 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 public class AsistenciaService {
 
     private final AsistenciaRepository asistenciaRepository;
@@ -79,7 +81,9 @@ public class AsistenciaService {
         asistencia.setSocio(resolverSocio(asistencia.getSocio()));
         asistencia.setProducto(resolverProducto(asistencia.getProducto()));
         validarAcceso(asistencia.getSocio(), asistencia.getProducto(), asistencia.getFechaHora());
-        return asistenciaRepository.save(asistencia);
+        Asistencia guardada = asistenciaRepository.save(asistencia);
+        log.info("Asistencia registrada productoId={} fecha={}", guardada.getProducto().getId(), guardada.getFechaHora());
+        return guardada;
     }
 
     public Asistencia buscarPorId(Long id) {

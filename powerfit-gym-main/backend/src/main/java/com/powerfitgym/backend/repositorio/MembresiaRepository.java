@@ -24,6 +24,13 @@ public interface MembresiaRepository extends JpaRepository<Membresia, Long> {
 
     long countBySocioId(Long socioId);
 
+    long countByCategoriaNombreAndActivoTrueAndFechaInicioLessThanEqualAndFechaFinGreaterThanEqual(
+            String categoria, LocalDate inicio, LocalDate fin);
+
+    @Query("select m.categoria.nombre, count(m.id) from Membresia m where m.activo = true " +
+            "and m.fechaInicio <= :hoy and m.fechaFin >= :hoy group by m.categoria.nombre")
+    List<Object[]> contarVigentesPorCategoria(@Param("hoy") LocalDate hoy);
+
     @Query("select m from Membresia m where " +
             "(:socioId is null or m.socio.id = :socioId) and " +
             "(:activo is null or m.activo = :activo) and " +

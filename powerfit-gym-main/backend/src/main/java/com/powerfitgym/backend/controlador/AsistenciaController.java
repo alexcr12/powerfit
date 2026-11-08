@@ -175,6 +175,6 @@ public class AsistenciaController {
                 "producto", producto.getNombre(),
                 "total", total,
                 "fecha", fecha.toString());
-        messagingTemplate.convertAndSend("/topic/asistencias", mensaje);
+        messagingTemplate.convertAndSend("/topic/asistencias", (Object) mensaje);
     }
 }

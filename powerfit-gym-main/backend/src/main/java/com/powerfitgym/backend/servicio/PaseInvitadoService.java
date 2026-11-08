@@ -12,8 +12,10 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 public class PaseInvitadoService {
     private final PaseInvitadoRepository paseRepository;
     private final SocioRepository socioRepository;
@@ -42,7 +44,9 @@ public class PaseInvitadoService {
         pase.setNombreInv(pase.getNombreInv().trim());
         pase.setFechaUso(fechaUso);
         pase.setActivo(true);
-        return paseRepository.saveAndFlush(pase);
+        PaseInvitado guardado = paseRepository.saveAndFlush(pase);
+        log.info("Pase de invitado generado id={} fechaUso={}", guardado.getId(), guardado.getFechaUso());
+        return guardado;
     }
 
     public PaseInvitado actualizar(Long id, String nombreInv, LocalDate fechaUso) {
