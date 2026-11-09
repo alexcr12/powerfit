@@ -16,6 +16,10 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>com.powerfitgym.backend.BackendApplication</mainClass>
+                    <outputDirectory>${project.basedir}/target</outputDirectory>
+                </configuration>
             </plugin>
         </plugins>
     </build>
