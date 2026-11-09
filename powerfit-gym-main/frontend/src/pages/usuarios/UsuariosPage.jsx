@@ -4,6 +4,7 @@ import { usuariosService } from '../../api/usuariosService';
 import { useToast } from '../../context/ToastContext';
 import { useAuth } from '../../context/AuthContext';
 import { ROLES } from '../../constants/roles';
+import { Ban, Pencil, UserCheck } from 'lucide-react';
 
 export default function UsuariosPage() {
   const { addToast } = useToast();
@@ -98,7 +99,7 @@ export default function UsuariosPage() {
 
       <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
         <table className="w-full text-left text-sm">
-          <thead><tr><th className="p-3">Nombre</th><th className="p-3">Email</th><th className="p-3">Rol</th><th className="p-3">Estado</th><th className="p-3">Acciones</th></tr></thead>
+          <thead><tr><th className="p-3">Nombre</th><th className="p-3">Email</th><th className="p-3">Rol</th><th className="p-3">Estado</th><th className="p-3 text-right">Acciones</th></tr></thead>
           <tbody>
             {usuarios.map((usuario) => {
               const esActual = user?.email?.toLowerCase() === usuario.email?.toLowerCase();
@@ -108,11 +109,13 @@ export default function UsuariosPage() {
                   <td className="p-3">{usuario.email}</td>
                   <td className="p-3">{usuario.rol}</td>
                   <td className="p-3">{usuario.activo ? 'Activo' : 'Inactivo'}</td>
-                  <td className="space-x-3 p-3">
-                    <button onClick={() => abrirFormulario(usuario)} className="text-emerald-700 dark:text-emerald-400">Editar</button>
-                    {usuario.activo
-                      ? !esActual && <button onClick={() => desactivar(usuario)} className="text-red-700 dark:text-red-400">Desactivar</button>
-                      : <button onClick={() => reactivar(usuario)} className="text-blue-700 dark:text-blue-400">Reactivar</button>}
+                  <td className="p-3">
+                    <div className="flex items-center justify-end gap-1.5">
+                      <button onClick={() => abrirFormulario(usuario)} className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white transition-colors cursor-pointer" title="Editar" aria-label="Editar"><Pencil size={14} /></button>
+                      {usuario.activo
+                        ? !esActual && <button onClick={() => desactivar(usuario)} className="p-1.5 rounded-lg bg-red-100 hover:bg-red-200 dark:bg-red-500/10 dark:hover:bg-red-500/20 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-500/20 transition-colors cursor-pointer" title="Desactivar" aria-label="Desactivar"><Ban size={14} /></button>
+                        : <button onClick={() => reactivar(usuario)} className="p-1.5 rounded-lg bg-emerald-100 hover:bg-emerald-200 dark:bg-emerald-500/10 dark:hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20 transition-colors cursor-pointer" title="Reactivar" aria-label="Reactivar"><UserCheck size={14} /></button>}
+                    </div>
                   </td>
                 </tr>
               );

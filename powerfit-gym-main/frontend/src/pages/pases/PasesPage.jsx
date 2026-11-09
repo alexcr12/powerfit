@@ -4,6 +4,7 @@ import { pasesService } from '../../api/pasesService';
 import { sociosService } from '../../api/sociosService';
 import { useToast } from '../../context/ToastContext';
 import { formatDate } from '../../utils/formatters';
+import { Ban, Pencil } from 'lucide-react';
 
 export default function PasesPage() {
   const { addToast } = useToast();
@@ -120,7 +121,7 @@ export default function PasesPage() {
 
       <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
         <table className="w-full text-left text-sm">
-          <thead><tr><th className="p-3">Socio</th><th className="p-3">Invitado</th><th className="p-3">Fecha de uso</th><th className="p-3">Estado</th><th className="p-3">Acciones</th></tr></thead>
+          <thead><tr><th className="p-3">Socio</th><th className="p-3">Invitado</th><th className="p-3">Fecha de uso</th><th className="p-3">Estado</th><th className="p-3 text-right">Acciones</th></tr></thead>
           <tbody>
             {pases.map((pase) => (
               <tr key={pase.id} className="border-t border-slate-200 dark:border-slate-800">
@@ -128,10 +129,12 @@ export default function PasesPage() {
                 <td className="p-3">{pase.nombre_inv}</td>
                 <td className="p-3">{formatDate(pase.fecha_uso)}</td>
                 <td className="p-3">{pase.activo ? 'Activo' : 'Anulado'}</td>
-                <td className="space-x-3 p-3">
+                <td className="p-3">
                   {pase.activo && <>
-                    <button onClick={() => editar(pase)} className="text-emerald-700 dark:text-emerald-400">Editar</button>
-                    <button onClick={() => anular(pase)} className="text-red-700 dark:text-red-400">Anular</button>
+                    <div className="flex items-center justify-end gap-1.5">
+                      <button onClick={() => editar(pase)} className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white transition-colors cursor-pointer" title="Editar" aria-label="Editar"><Pencil size={14} /></button>
+                      <button onClick={() => anular(pase)} className="p-1.5 rounded-lg bg-red-100 hover:bg-red-200 dark:bg-red-500/10 dark:hover:bg-red-500/20 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-500/20 transition-colors cursor-pointer" title="Anular pase" aria-label="Anular pase"><Ban size={14} /></button>
+                    </div>
                   </>}
                 </td>
               </tr>

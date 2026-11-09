@@ -6,6 +6,7 @@ import { sociosService } from '../../api/sociosService';
 import { categoriasService } from '../../api/categoriasService';
 import { formatDate, formatCurrency } from '../../utils/formatters';
 import { useToast } from '../../context/ToastContext';
+import { Ban, Pencil } from 'lucide-react';
 
 export default function MembresiasPage() {
   const { addToast } = useToast();
@@ -113,7 +114,7 @@ export default function MembresiasPage() {
 
       <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
         <table className="w-full text-left text-sm">
-          <thead><tr><th className="p-3">Socio</th><th className="p-3">Tipo de membresía</th><th className="p-3">Fecha de inicio</th><th className="p-3">Fecha de fin</th><th className="p-3">Monto</th><th className="p-3">Estado</th><th className="p-3">Acciones</th></tr></thead>
+          <thead><tr><th className="p-3">Socio</th><th className="p-3">Tipo de membresía</th><th className="p-3">Fecha de inicio</th><th className="p-3">Fecha de fin</th><th className="p-3">Monto</th><th className="p-3">Estado</th><th className="p-3 text-right">Acciones</th></tr></thead>
           <tbody>
             {membresias.map((membresia) => {
               const estado = !membresia.activo ? 'Cancelada' : membresia.fecha_fin >= fechaHoy ? 'Vigente' : 'Vencida';
@@ -125,10 +126,12 @@ export default function MembresiasPage() {
                   <td className="p-3">{formatDate(membresia.fecha_fin)}</td>
                   <td className="p-3">{formatCurrency(membresia.monto_total || 0)}</td>
                   <td className="p-3">{estado}</td>
-                  <td className="space-x-3 p-3">
+                  <td className="p-3">
                     {membresia.activo && <>
-                      <button onClick={() => editar(membresia)} className="text-emerald-700 dark:text-emerald-400">Editar</button>
-                      <button onClick={() => cancelar(membresia)} className="text-red-700 dark:text-red-400">Cancelar</button>
+                      <div className="flex items-center justify-end gap-1.5">
+                        <button onClick={() => editar(membresia)} className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white transition-colors cursor-pointer" title="Editar" aria-label="Editar"><Pencil size={14} /></button>
+                        <button onClick={() => cancelar(membresia)} className="p-1.5 rounded-lg bg-red-100 hover:bg-red-200 dark:bg-red-500/10 dark:hover:bg-red-500/20 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-500/20 transition-colors cursor-pointer" title="Cancelar membresía" aria-label="Cancelar membresía"><Ban size={14} /></button>
+                      </div>
                     </>}
                   </td>
                 </tr>
