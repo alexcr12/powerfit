@@ -22,13 +22,15 @@ jobs:
           distribution: 'microsoft'
 
       - name: Build with Maven
-        run: mvn clean package -DskipTests -f powerfit-gym-main/powerfit-gym-main/backend/pom.xml
+        run: |
+          cd powerfit-gym-main/backend
+          mvn clean package -DskipTests
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: java-app
-          path: powerfit-gym-main/powerfit-gym-main/backend/target/*.jar
+          path: powerfit-gym-main/backend/target/*.jar
 
   deploy:
     runs-on: ubuntu-latest
