@@ -82,8 +82,7 @@ export default function MembresiasPage() {
     }
   };
 
-  const hoy = new Date();
-  const fechaHoy = `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(hoy.getDate()).padStart(2, '0')}`;
+  const fechaHoy = new Date().toLocaleDateString('en-CA');
   const nombreSocio = (membresia) => socios.find((socio) => socio.id === membresia.socio_id)?.nombre || `Socio #${membresia.socio_id}`;
   const nombreCategoria = (membresia) => categorias.find((categoria) => categoria.id === membresia.categoria_id)?.nombre || `Categoría #${membresia.categoria_id}`;
 

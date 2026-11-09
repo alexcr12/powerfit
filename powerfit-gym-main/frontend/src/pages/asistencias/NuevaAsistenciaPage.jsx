@@ -24,7 +24,7 @@ export default function NuevaAsistenciaPage() {
     event.preventDefault();
     try {
       setSaving(true);
-      await asistenciasService.create({ socioId, productoId, fechaHora: new Date().toISOString().slice(0, 19).replace('T', ' ') });
+      await asistenciasService.create({ socioId, productoId });
       addToast('Asistencia registrada.', 'success');
       navigate('/asistencias');
     } catch (error) { addToast(obtenerMensajeError(error), 'error'); }

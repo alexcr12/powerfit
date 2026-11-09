@@ -33,7 +33,7 @@ export default function NuevaMembresiaPage() {
     if (!socioId || !categoriaId) return addToast('Selecciona un socio y una categoría.', 'error');
     try {
       setSaving(true);
-      await membresiasService.create({ socioId, categoriaId, fechaInicio: new Date().toISOString().slice(0, 10) });
+      await membresiasService.create({ socioId, categoriaId, fechaInicio: new Date().toLocaleDateString('en-CA') });
       addToast('Membresía contratada.', 'success');
       navigate('/membresias');
     } catch (error) {

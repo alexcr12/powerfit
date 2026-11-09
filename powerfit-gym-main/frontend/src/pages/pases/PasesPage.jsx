@@ -11,7 +11,7 @@ export default function PasesPage() {
   const [socios, setSocios] = useState([]);
   const [socioId, setSocioId] = useState('');
   const [nombreInv, setNombreInv] = useState('');
-  const [fechaUso, setFechaUso] = useState(() => new Date().toISOString().slice(0, 10));
+  const [fechaUso, setFechaUso] = useState(() => new Date().toLocaleDateString('en-CA'));
   const [disponibles, setDisponibles] = useState(null);
   const [editando, setEditando] = useState(null);
   const [saving, setSaving] = useState(false);
