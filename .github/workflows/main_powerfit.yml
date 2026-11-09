@@ -1,3 +1,6 @@
+# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+
 name: Build and deploy JAR app to Azure Web App - powerfit
 
 on:
@@ -10,7 +13,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: read #This is required for actions/checkout
 
     steps:
       - uses: actions/checkout@v4
@@ -22,22 +25,20 @@ jobs:
           distribution: 'microsoft'
 
       - name: Build with Maven
-        run: |
-          cd powerfit-gym-main/backend
-          mvn clean package -DskipTests
+        run: mvn clean install
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: java-app
-          path: powerfit-gym-main/backend/target/*.jar
+          path: '${{ github.workspace }}/target/*.jar'
 
   deploy:
     runs-on: ubuntu-latest
     needs: build
     permissions:
-      id-token: write
-      contents: read
+      id-token: write #This is required for requesting the JWT
+      contents: read #This is required for actions/checkout
   
     steps:
       - name: Download artifact from build job
@@ -48,9 +49,9 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_868BEEC5119A430BA950504EA345B6B4 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_DD55F298CA1D431B90581C64DB9577AA }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_AB5A85BB28564DBDA85F85274C27FAF4 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_665C50DD2CBE45029EEAA28D33D3C4D5 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_CC44DF68ECB04AE2A10E82027ABD21AB }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_C1BEDD711EFB43068DB4E159272C96E5 }}
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
@@ -59,3 +60,4 @@ jobs:
           app-name: 'powerfit'
           slot-name: 'Production'
           package: '*.jar'
+          
