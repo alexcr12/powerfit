@@ -1,13 +1,18 @@
 package com.powerfitgym.backend.servicio;
 
 import com.powerfitgym.backend.entidad.Usuario;
+import com.powerfitgym.backend.excepcion.ReglaNegocioException;
 import com.powerfitgym.backend.repositorio.UsuarioRepository;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@Slf4j
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
@@ -54,13 +59,31 @@ public class UsuarioService {
         if (datosActualizados.getRol() != null)
             usuario.setRol(datosActualizados.getRol());
 
+        if (datosActualizados.getActivo() != null) {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            boolean esPropioUsuario = authentication != null && authentication.isAuthenticated()
+                    && authentication.getName() != null
+                    && authentication.getName().equalsIgnoreCase(usuario.getEmail());
+            if (esPropioUsuario && !datosActualizados.getActivo()) {
+                throw new ReglaNegocioException("No puedes desactivar tu propia cuenta.");
+            }
+
+            boolean estabaActivo = Boolean.TRUE.equals(usuario.getActivo());
+            usuario.setActivo(datosActualizados.getActivo());
+            if (estabaActivo != datosActualizados.getActivo()) {
+                log.info("Usuario {} email={}", datosActualizados.getActivo() ? "reactivado" : "desactivado", usuario.getEmail());
+            }
+        }
+
         return usuarioRepository.save(usuario);
     }
 
     public void eliminar(Long id) {
         Usuario usuario = buscarPorId(id);
+        boolean estabaActivo = Boolean.TRUE.equals(usuario.getActivo());
         usuario.setActivo(false);
         usuarioRepository.save(usuario);
+        if (estabaActivo) log.info("Usuario desactivado email={}", usuario.getEmail());
     }
 
     private void validarRol(String rol) {

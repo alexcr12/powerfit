@@ -164,7 +164,7 @@ export default function Sidebar({ isOpen, onClose }) {
 
         <div className="p-3.5 border-t border-slate-800 bg-slate-950/40 shrink-0">
           <div className="text-[11px] text-slate-300 text-center">
-            Avance 1 • <span className="text-emerald-400 font-semibold">21 RF Operativos</span>
+            Avance 2 • <span className="text-emerald-400 font-semibold">21 RF Operativos</span>
           </div>
         </div>
       </aside>

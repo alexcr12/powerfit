@@ -56,7 +56,7 @@ export default function Login() {
             PowerFit <span className="text-emerald-400">GYM</span>
           </h1>
           <p className="text-slate-400 text-sm mt-1">
-            Sistema Administrativo de Gestión • Avance 1
+            Sistema Administrativo de Gestión • Avance 2
           </p>
         </div>
 
@@ -160,7 +160,7 @@ export default function Login() {
         </div>
 
         <p className="text-center text-xs text-slate-600 mt-6">
-          PowerFit GYM • Proyecto Universitario Frontend Avance 1
+          PowerFit GYM • Proyecto Universitario Frontend Avance 2
         </p>
       </div>
     </div>
