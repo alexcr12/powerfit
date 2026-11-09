@@ -23,8 +23,8 @@ INSERT IGNORE INTO socios (id, registrado_por, nombre, documento, telefono, fech
 
 INSERT IGNORE INTO membresias (id, socio_id, categoria_id, fecha_inicio, fecha_fin, monto_total, activo) VALUES 
 (1, 1, 1, '2026-11-01', '2026-12-01', 100.00, 1),
-(2, 2, 2, '2026-11-03', '2026-12-03', 100.00, 1),
-(3, 3, 3, '2026-11-05', '2026-12-05', 100.00, 1);
+(2, 2, 2, '2026-11-03', '2026-12-03', 200.00, 1),
+(3, 3, 3, '2026-11-05', '2026-12-05', 300.00, 1);
 
 INSERT IGNORE INTO pases_invitado (id, socio_id, nombre_inv, fecha_uso, activo) VALUES 
 (1, 1, 'Lucas Silva', '2026-09-18', 1),

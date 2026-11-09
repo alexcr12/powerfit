@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { obtenerMensajeError } from '../../utils/obtenerMensajeError';
 import { UserPlus, Edit2, UserX, UserCheck } from 'lucide-react';
 import { sociosService } from '../../api/sociosService';
+import { usuariosService } from '../../api/usuariosService'; // 🔥 NUEVO
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { formatDate } from '../../utils/formatters';
@@ -18,6 +19,7 @@ export default function SociosPage({ openCreateModal = false }) {
   const { addToast } = useToast();
 
   const [socios, setSocios] = useState([]);
+  const [usuarios, setUsuarios] = useState([]); // 🔥 NUEVO ESTADO
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('activos'); 
@@ -38,12 +40,17 @@ export default function SociosPage({ openCreateModal = false }) {
     loading: false,
   });
 
+  // 🔥 CARGAMOS SOCIOS Y USUARIOS
   const loadSocios = async () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await sociosService.getAll();
-      setSocios(data);
+      const [dataSocios, dataUsuarios] = await Promise.all([
+        sociosService.getAll(),
+        usuariosService.listar(), // Usamos tu método 'listar'
+      ]);
+      setSocios(dataSocios);
+      setUsuarios(dataUsuarios);
     } catch (err) {
       setError(obtenerMensajeError(err));
       addToast(obtenerMensajeError(err), 'error');
@@ -115,7 +122,7 @@ export default function SociosPage({ openCreateModal = false }) {
           nombre: formData.nombre.trim(),
           documento: formData.documento.trim(),
           telefono: formData.telefono.trim(),
-          registrado_por: user?.nombre || 'Recepción',
+          registrado_por: user?.id || null, // 🔥 GUARDAMOS EL ID, NO EL NOMBRE
         });
         addToast(`Socio "${formData.nombre}" registrado exitosamente.`, 'success');
       }
@@ -158,6 +165,9 @@ export default function SociosPage({ openCreateModal = false }) {
   const sociosInactivos = socios.filter((s) => !s.activo);
   const displayedSocios = activeTab === 'activos' ? sociosActivos : sociosInactivos;
 
+  // 🔥 CREAMOS EL MAPA DE USUARIOS
+  const usuariosMap = Object.fromEntries(usuarios.map((u) => [u.id, u.nombre]));
+
   const columns = [
     {
       header: 'Nombre Completo',
@@ -182,7 +192,11 @@ export default function SociosPage({ openCreateModal = false }) {
     {
       header: 'Registrado Por',
       accessor: 'registrado_por',
-      render: (s) => <span className="text-slate-500 dark:text-slate-400">{s.registrado_por || '-'}</span>,
+      render: (s) => {
+        // 🔥 BUSCAMOS EL NOMBRE EN EL MAPA
+        const nombre = usuariosMap[s.registrado_por] || s.registrado_por;
+        return <span className="text-slate-500 dark:text-slate-400">{nombre || '-'}</span>;
+      },
     },
     {
       header: 'Estado',
