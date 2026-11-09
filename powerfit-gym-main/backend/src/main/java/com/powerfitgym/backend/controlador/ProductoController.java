@@ -53,7 +53,6 @@ public class ProductoController {
         return new ResponseEntity<>(productoService.crear(producto), HttpStatus.CREATED);
     }
 
-    // 🔥 SOLO HAY UN PATCH AQUÍ
     @PatchMapping("/{id}")
     public ResponseEntity<Producto> actualizar(@PathVariable Long id, @RequestBody Map<String, Object> body) {
         Producto datos = new Producto();

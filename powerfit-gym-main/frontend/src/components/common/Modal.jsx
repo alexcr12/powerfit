@@ -23,18 +23,17 @@ export default function Modal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* Backdrop */}
+      
       <div
         className="fixed inset-0 bg-slate-950/60 dark:bg-black/80 backdrop-blur-sm transition-opacity animate-in fade-in duration-200"
         onClick={onClose}
       />
 
-      {/* Modal Dialog */}
       <div
         className={`relative z-10 w-full ${maxWidth} bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl shadow-slate-300/50 dark:shadow-black/80 overflow-hidden transform transition-all animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]`}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Cabecera */}
+        
         <div className="flex items-center justify-between px-6 py-5 border-b border-slate-200 dark:border-slate-800 shrink-0">
           <div>
             <h3 className="text-lg font-bold text-slate-900 dark:text-white tracking-tight">{title}</h3>
@@ -49,7 +48,6 @@ export default function Modal({
           </button>
         </div>
 
-        {/* Contenido con scroll */}
         <div className="p-6 overflow-y-auto flex-1">
           {children}
         </div>

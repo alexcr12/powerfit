@@ -42,7 +42,6 @@ export const productosService = {
     return normalizar((await api.patch(`/productos/${id}`, payload)).data);
   },
 
-  // RF13: Desactivar producto (Borrado Lógico)
   deactivate: async (id) => {
     const res = await api.patch(`/productos/${id}`, { activo: false });
     return res.data;

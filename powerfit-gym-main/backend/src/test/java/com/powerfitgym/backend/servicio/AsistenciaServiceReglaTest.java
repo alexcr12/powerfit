@@ -1,7 +1,5 @@
 package com.powerfitgym.backend.servicio;
 
-/* REGLA 1: solo se registra asistencia si el socio tiene membresía vigente (activo=true y fecha_fin >= hoy) de la categoría a la que pertenece la clase. */
-
 import com.powerfitgym.backend.entidad.Asistencia;
 import com.powerfitgym.backend.entidad.Categoria;
 import com.powerfitgym.backend.entidad.Membresia;

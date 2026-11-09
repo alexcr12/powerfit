@@ -37,22 +37,17 @@ export default function AppRoutes() {
         <Route index element={<Navigate to="/dashboard" replace />} />
         <Route path="dashboard" element={<Dashboard />} />
 
-        {/* Socios (RF01 - RF04) */}
         <Route path="socios" element={<SociosPage />} />
         <Route path="socios/nuevo" element={<SociosPage openCreateModal={true} />} />
 
-        {/* Membresías (RF14 - RF16) */}
         <Route path="membresias" element={<MembresiasPage />} />
         <Route path="membresias/nueva" element={<NuevaMembresiaPage />} />
 
-        {/* Asistencias (RF18 - RF21) */}
         <Route path="asistencias" element={<AsistenciasPage />} />
         <Route path="asistencias/nueva" element={<NuevaAsistenciaPage />} />
 
-        {/* Pases (RF17) */}
         <Route path="pases" element={<PasesPage />} />
 
-        {/* Módulos solo Admin */}
         <Route
           path="categorias"
           element={
@@ -83,5 +78,3 @@ export default function AppRoutes() {
     </Routes>
   );
 }
-
-

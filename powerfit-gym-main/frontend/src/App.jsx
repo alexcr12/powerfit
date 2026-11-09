@@ -2,12 +2,12 @@ import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
-import { ThemeProvider } from './context/ThemeContext'; // 🔥 Importas el nuevo
+import { ThemeProvider } from './context/ThemeContext'; 
 import AppRoutes from './routes/AppRoutes';
 
 export default function App() {
   return (
-    <ThemeProvider> {/* 🔥 Lo envuelves aquí */}
+    <ThemeProvider> 
       <BrowserRouter>
         <AuthProvider>
           <ToastProvider>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { obtenerMensajeError } from '../../utils/obtenerMensajeError';
-import { UserPlus, Edit2, UserX, UserCheck, History } from 'lucide-react';
+import { UserPlus, Edit2, UserX, UserCheck } from 'lucide-react';
 import { sociosService } from '../../api/sociosService';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
@@ -135,7 +135,7 @@ export default function SociosPage({ openCreateModal = false }) {
     try {
       setConfirmDialog((prev) => ({ ...prev, loading: true }));
       await sociosService.deactivate(socio.id);
-      addToast(`Socio "${socio.nombre}" desactivado. Su historial se preserva en la pestaña de inactivos (Regla R2).`, 'warning', 4500);
+      addToast(`Socio "${socio.nombre}" desactivado. Su historial se preserva en la pestaña de inactivos.`, 'warning', 4500);
       setConfirmDialog({ isOpen: false, socio: null, loading: false });
       loadSocios();
     } catch (err) {
@@ -195,7 +195,7 @@ export default function SociosPage({ openCreateModal = false }) {
               : 'bg-red-100 dark:bg-red-500/10 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-500/20'
           }`}
         >
-          {s.activo ? 'Activo' : 'Inactivo (R2)'}
+          {s.activo ? 'Activo' : 'Inactivo'}
         </span>
       ),
     },
@@ -207,9 +207,6 @@ export default function SociosPage({ openCreateModal = false }) {
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">Gestión de Socios</h1>
-            <span className="text-xs bg-emerald-100 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20 px-2 py-0.5 rounded-full font-medium">
-              RF01–RF04
-            </span>
           </div>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
             Registro, consulta y administración de clientes atendidos en recepción.
@@ -217,21 +214,10 @@ export default function SociosPage({ openCreateModal = false }) {
         </div>
 
         <Button icon={UserPlus} onClick={handleOpenCreate}>
-          Registrar Socio (RF01)
+          Registrar Socio
         </Button>
       </div>
 
-      {/* Regla R2 - Alerta Informativa con MODO CLARO */}
-      <div className="p-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-300 flex items-start gap-3 shadow-sm dark:shadow-none transition-colors duration-300">
-        <div className="p-1 rounded-lg bg-emerald-100 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5">
-          <History size={16} />
-        </div>
-        <div>
-          <strong className="text-emerald-600 dark:text-emerald-400">Regla R2 aplicada:</strong> Al desactivar un socio no se eliminan sus asistencias ni membresías. El listado general filtra los activos, y la pestaña "Inactivos" permite consultar su historial completo en cualquier momento.
-        </div>
-      </div>
-
-      {/* Pestañas Activos vs Inactivos */}
       <div className="flex gap-2 border-b border-slate-200 dark:border-slate-800 pb-2 transition-colors duration-300">
         <button
           onClick={() => setActiveTab('activos')}
@@ -255,7 +241,6 @@ export default function SociosPage({ openCreateModal = false }) {
         </button>
       </div>
 
-      {/* Tabla */}
       {loading ? (
         <Loader message="Cargando socios desde la API..." />
       ) : error ? (
@@ -271,7 +256,7 @@ export default function SociosPage({ openCreateModal = false }) {
               <button
                 onClick={() => handleOpenEdit(socio)}
                 className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white transition-colors cursor-pointer"
-                title="Editar socio (RF03)"
+                title="Editar socio"
               >
                 <Edit2 size={14} />
               </button>
@@ -279,7 +264,7 @@ export default function SociosPage({ openCreateModal = false }) {
                 <button
                   onClick={() => setConfirmDialog({ isOpen: true, socio, loading: false })}
                   className="p-1.5 rounded-lg bg-red-100 hover:bg-red-200 dark:bg-red-500/10 dark:hover:bg-red-500/20 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-500/20 transition-colors cursor-pointer"
-                  title="Desactivar socio (RF04 - Borrado lógico R2)"
+                  title="Desactivar socio"
                 >
                   <UserX size={14} />
                 </button>
@@ -297,11 +282,10 @@ export default function SociosPage({ openCreateModal = false }) {
         />
       )}
 
-      {/* Modal Registrar / Editar Socio */}
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title={editingSocio ? 'Editar Socio (RF03)' : 'Registrar Nuevo Socio (RF01)'}
+        title={editingSocio ? 'Editar Socio' : 'Registrar Nuevo Socio'}
         subtitle="Complete los datos personales para la atención en recepción"
       >
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -346,13 +330,12 @@ export default function SociosPage({ openCreateModal = false }) {
         </form>
       </Modal>
 
-      {/* Diálogo de Confirmación de Desactivación Lógica (R2) */}
       <ConfirmDialog
         isOpen={confirmDialog.isOpen}
         onClose={() => setConfirmDialog({ isOpen: false, socio: null, loading: false })}
         onConfirm={handleConfirmDeactivate}
         title="¿Desactivar Socio?"
-        message={`¿Está seguro de desactivar a "${confirmDialog.socio?.nombre}"? Según la Regla de Negocio R2, el socio se marcará como inactivo pero todas sus asistencias y membresías históricas permanecerán intactas.`}
+        message={`¿Está seguro de desactivar a "${confirmDialog.socio?.nombre}"? El socio se marcará como inactivo y sus asistencias y membresías históricas permanecerán intactas.`}
         confirmText="Desactivar (Borrado Lógico)"
         variant="danger"
         loading={confirmDialog.loading}
@@ -360,6 +343,3 @@ export default function SociosPage({ openCreateModal = false }) {
     </div>
   );
 }
-
-
-

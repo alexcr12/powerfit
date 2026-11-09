@@ -17,7 +17,6 @@ export default function MembresiasPage() {
   const [fechaFin, setFechaFin] = useState('');
   const [montoTotal, setMontoTotal] = useState('');
 
-  // Carga las membresías y sus nombres relacionados.
   const cargar = async () => {
     try {
       const [lista, listaSocios, listaCategorias] = await Promise.all([
@@ -37,7 +36,6 @@ export default function MembresiasPage() {
     cargar();
   }, []);
 
-  // Abre la edición con los valores de la membresía elegida.
   const editar = (membresia) => {
     setEditando(membresia);
     setFechaInicio(membresia.fecha_inicio);
@@ -45,7 +43,6 @@ export default function MembresiasPage() {
     setMontoTotal(membresia.monto_total);
   };
 
-  // Valida y guarda los campos editables de RF27.
   const guardarEdicion = async (event) => {
     event.preventDefault();
     if (fechaFin < fechaInicio) {
@@ -70,7 +67,6 @@ export default function MembresiasPage() {
     }
   };
 
-  // Confirma la baja lógica de la membresía.
   const cancelar = async (membresia) => {
     if (!window.confirm(`¿Cancelar la membresía #${membresia.id}?`)) return;
     try {

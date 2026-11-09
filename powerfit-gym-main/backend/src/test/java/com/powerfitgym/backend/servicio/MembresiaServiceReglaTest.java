@@ -1,7 +1,5 @@
 package com.powerfitgym.backend.servicio;
 
-/* REGLA 4: si una categoría se desactiva, no se pueden contratar nuevas membresías de ella, pero las vigentes siguen dando acceso hasta su fecha_fin. */
-
 import com.powerfitgym.backend.entidad.Categoria;
 import com.powerfitgym.backend.entidad.Membresia;
 import com.powerfitgym.backend.entidad.Socio;

@@ -1,14 +1,4 @@
-/**
- * Módulo centralizado de Auditoría y Logs - PowerFit GYM
- * Registra eventos en consola y persiste los últimos 100 registros en localStorage.
- * Niveles soportados: INFO, WARN, ERROR.
- * 
- * Se utiliza para registrar:
- * - Peticiones y respuestas de la API (Axios interceptors)
- * - Inicio y cierre de sesión (AuthContext)
- * - Intentos bloqueados por permisos de rol (RoleRoute / ProtectedRoute)
- * - Excepciones y errores de red
- */
+
 
 const STORAGE_KEY = 'powerfit_logs';
 const MAX_LOGS = 100;
@@ -19,10 +9,6 @@ export const LOG_LEVELS = {
   ERROR: 'ERROR',
 };
 
-/**
- * Obtiene los logs almacenados en localStorage.
- * @returns {Array} Lista de objetos de log
- */
 export function getStoredLogs() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -33,9 +19,6 @@ export function getStoredLogs() {
   }
 }
 
-/**
- * Agrega un nuevo evento al registro persistente de auditoría.
- */
 function addLog(level, modulo, accion, detalles = {}) {
   const logEntry = {
     id: Date.now() + Math.random().toString(36).substring(2, 7),
@@ -46,7 +29,6 @@ function addLog(level, modulo, accion, detalles = {}) {
     detalles: typeof detalles === 'string' ? { mensaje: detalles } : detalles,
   };
 
-  // Formato para consola de desarrollo
   const color = level === LOG_LEVELS.ERROR ? '#ef4444' : level === LOG_LEVELS.WARN ? '#f59e0b' : '#10b981';
   console.log(
     `%c[${logEntry.level}] [${logEntry.modulo}] ${logEntry.accion}`,
@@ -75,4 +57,3 @@ export const logger = {
   },
   getAll: getStoredLogs,
 };
-

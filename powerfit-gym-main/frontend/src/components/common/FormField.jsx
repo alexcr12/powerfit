@@ -12,8 +12,8 @@ export default function FormField({
   helperText,
   required = false,
   disabled = false,
-  options = [], // Para type="select": array de { value, label }
-  rows = 3, // Para type="textarea"
+  options = [], 
+  rows = 3, 
   className = '',
   ...props
 }) {
@@ -85,4 +85,3 @@ export default function FormField({
     </div>
   );
 }
-

@@ -25,20 +25,20 @@ export default function Sidebar({ isOpen, onClose }) {
 
   const baseNavLinks = [
     { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { to: '/socios', label: 'Socios', icon: Users, badge: 'RF01-04' },
-    { to: '/membresias', label: 'Membresías', icon: CreditCard, badge: 'RF14-16' },
-    { to: '/asistencias', label: 'Asistencias', icon: CalendarCheck, badge: 'RF18-21' },
-    { to: '/pases', label: 'Pases de Invitado', icon: Ticket, badge: 'RF17' },
+    { to: '/socios', label: 'Socios', icon: Users },
+    { to: '/membresias', label: 'Membresías', icon: CreditCard },
+    { to: '/asistencias', label: 'Asistencias', icon: CalendarCheck },
+    { to: '/pases', label: 'Pases de Invitado', icon: Ticket },
   ];
 
   const adminNavLinks = [
-    { to: '/categorias', label: 'Categorías', icon: Tags, badge: 'RF07-09' },
-    { to: '/productos', label: 'Productos & Servicios', icon: Package, badge: 'RF10-13' },
-    { to: '/usuarios', label: 'Gestión Personal', icon: UserCog, badge: 'RF05-06' },
+    { to: '/categorias', label: 'Categorías', icon: Tags },
+    { to: '/productos', label: 'Productos & Servicios', icon: Package },
+    { to: '/usuarios', label: 'Gestión Personal', icon: UserCog },
   ];
 
    const navItemClass = ({ isActive }) =>
-    `flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all cursor-pointer ${
+    `flex items-center justify-start gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all cursor-pointer ${
       isActive
         ? 'bg-emerald-600 text-white font-semibold shadow-lg shadow-emerald-900/30'
         : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-800/70'
@@ -99,11 +99,6 @@ export default function Sidebar({ isOpen, onClose }) {
                       <Icon size={17} />
                       <span>{item.label}</span>
                     </div>
-                    {item.badge && (
-                      <span className="text-[9px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700/60">
-                        {item.badge}
-                      </span>
-                    )}
                   </NavLink>
                 );
               })}
@@ -129,11 +124,6 @@ export default function Sidebar({ isOpen, onClose }) {
                         <Icon size={17} />
                         <span>{item.label}</span>
                       </div>
-                      {item.badge && (
-                        <span className="text-[9px] px-1.5 py-0.5 rounded bg-slate-800 text-emerald-300 border border-emerald-500/20">
-                          {item.badge}
-                        </span>
-                      )}
                     </NavLink>
                   );
                 })}
@@ -149,7 +139,6 @@ export default function Sidebar({ isOpen, onClose }) {
           )}
         </div>
 
-        {/* BOTÓN DE MODO CLARO/OSCURO */}
                 <div className="px-3.5 pb-2 shrink-0">
           <button
             onClick={() => setIsDark(!isDark)}
@@ -164,11 +153,10 @@ export default function Sidebar({ isOpen, onClose }) {
 
         <div className="p-3.5 border-t border-slate-800 bg-slate-950/40 shrink-0">
           <div className="text-[11px] text-slate-300 text-center">
-            Avance 2 • <span className="text-emerald-400 font-semibold">21 RF Operativos</span>
+            Avance 2
           </div>
         </div>
       </aside>
     </>
   );
 }
-

@@ -1,7 +1,5 @@
 package com.powerfitgym.backend.servicio;
 
-/* REGLA 2: desactivar un socio NO borra su historial (asistencias, membresías, pases). Prohibido el borrado físico de socios. */
-
 import com.powerfitgym.backend.entidad.Socio;
 import com.powerfitgym.backend.repositorio.AsistenciaRepository;
 import com.powerfitgym.backend.repositorio.MembresiaRepository;

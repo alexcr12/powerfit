@@ -15,7 +15,6 @@ export default function UsuariosPage() {
   const [guardando, setGuardando] = useState(false);
   const [formulario, setFormulario] = useState({ nombre: '', email: '', rol: ROLES.STAFF, password: '' });
 
-  // Carga la lista actual de usuarios.
   const cargarUsuarios = async () => {
     try {
       setUsuarios(await usuariosService.listar());
@@ -30,7 +29,6 @@ export default function UsuariosPage() {
     cargarUsuarios();
   }, []);
 
-  // Prepara el formulario para crear o editar.
   const abrirFormulario = (usuario = null) => {
     setEditando(usuario);
     setFormulario({
@@ -42,7 +40,6 @@ export default function UsuariosPage() {
     setModalAbierto(true);
   };
 
-  // Guarda nombre, correo y rol; solo incluye la contraseña si se escribió.
   const guardarUsuario = async (event) => {
     event.preventDefault();
     const datos = {
@@ -66,7 +63,6 @@ export default function UsuariosPage() {
     }
   };
 
-  // Confirma la baja lógica del usuario.
   const desactivar = async (usuario) => {
     if (!window.confirm(`¿Desactivar al usuario ${usuario.nombre}?`)) return;
     try {
@@ -78,7 +74,6 @@ export default function UsuariosPage() {
     }
   };
 
-  // Reactiva el usuario sin modificar sus otros datos.
   const reactivar = async (usuario) => {
     try {
       await usuariosService.actualizar(usuario.id, { activo: true });

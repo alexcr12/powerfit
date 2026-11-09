@@ -13,7 +13,6 @@ export default function Table({
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Filtrado de datos por término de búsqueda
   const filteredData = useMemo(() => {
     if (!searchTerm.trim()) return data;
     const term = searchTerm.toLowerCase().trim();
@@ -31,7 +30,6 @@ export default function Table({
     });
   }, [data, searchTerm, searchFields]);
 
-  // Paginación
   const totalPages = Math.ceil(filteredData.length / pageSize) || 1;
   const paginatedData = useMemo(() => {
     const start = (currentPage - 1) * pageSize;
@@ -45,7 +43,7 @@ export default function Table({
 
   return (
     <div className="bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 rounded-3xl overflow-hidden shadow-xl transition-colors duration-300">
-      {/* Barra de herramientas superior */}
+      
       {searchable && (
         <div className="p-4 sm:p-5 border-b border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="relative w-full sm:max-w-xs">
@@ -67,7 +65,6 @@ export default function Table({
         </div>
       )}
 
-      {/* Tabla Responsive */}
       <div className="overflow-x-auto">
         <table className="w-full text-left text-xs">
           <thead className="bg-slate-50 dark:bg-slate-950/60 border-b border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 font-semibold uppercase tracking-wider text-[11px]">
@@ -111,7 +108,6 @@ export default function Table({
         </table>
       </div>
 
-      {/* Barra de Paginación */}
       {totalPages > 1 && (
         <div className="p-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
           <span>

@@ -1,7 +1,4 @@
-/**
- * Módulo de utilidades de formateo para el sistema PowerFit GYM.
- * Formatea fechas, moneda y estados para una presentación clara al usuario.
- */
+
 
 export function formatCurrency(amount) {
   const num = Number(amount) || 0;

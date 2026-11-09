@@ -27,7 +27,6 @@ export const asistenciasService = {
     return normalizar((await api.post('/asistencias', payload)).data);
   },
 
-  // RF20: Editar / corregir asistencia
   update: async (id, asistenciaData) => {
     const payload = {
       fecha_hora: asistenciaData.fecha_hora ?? asistenciaData.fechaHora,
@@ -36,7 +35,6 @@ export const asistenciasService = {
     return normalizar((await api.patch(`/asistencias/${id}`, payload)).data);
   },
 
-  // RF21: Eliminar asistencia (eliminación física)
   delete: async (id) => {
     const res = await api.delete(`/asistencias/${id}`);
     return res.data;

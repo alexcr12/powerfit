@@ -24,7 +24,7 @@ export function AuthProvider({ children }) {
     setAuthError(null);
 
     try {
-      // 🔥 1. Llamamos al backend real (Spring Boot) para obtener el JWT
+      
       const response = await api.post('/auth/login', { 
         email: email.trim().toLowerCase(), 
         password 
@@ -32,10 +32,8 @@ export function AuthProvider({ children }) {
 
       const { token, nombre, rol } = response.data;
 
-      // 🔥 2. Guardamos el Token en el localStorage para Axios
       localStorage.setItem('token', token);
 
-      // 3. Armamos la sesión del usuario
       const sessionUser = {
         nombre,
         email,
@@ -64,7 +62,7 @@ export function AuthProvider({ children }) {
       logger.info('AUTH_LOGOUT', `Cierre de sesión de ${user.nombre}`);
     }
     setUser(null);
-    // 🔥 Limpiamos TODOS los datos de sesión, incluyendo el Token
+    
     localStorage.removeItem(USER_STORAGE_KEY);
     localStorage.removeItem('token');
     localStorage.removeItem('rol');

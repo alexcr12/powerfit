@@ -10,13 +10,12 @@ export default function Dashboard() {
   const { addToast } = useToast();
   const [metricas, setMetricas] = useState(null);
   const [contadores, setContadores] = useState([]);
-  const [conectado, setConectado] = useState(false);
+  const [, setConectado] = useState(false);
   const [cargando, setCargando] = useState(true);
 
   useEffect(() => {
     let activo = true;
 
-    // Carga las métricas y el contador inicial del día.
     Promise.all([api.get('/metricas'), api.get('/asistencias/contador-hoy')])
       .then(([respuestaMetricas, respuestaContadores]) => {
         if (!activo) return;
@@ -33,7 +32,6 @@ export default function Dashboard() {
         }
       });
 
-    // Recibe y aplica los cambios de contador publicados por el backend.
     const cliente = new Client({
       webSocketFactory: () => new SockJS(`${API_BASE_URL}/ws`),
       reconnectDelay: 5000,
@@ -69,8 +67,6 @@ export default function Dashboard() {
     <main className="space-y-6">
       <header className="rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
         <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Dashboard</h1>
-        <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">Resumen de membresías y clases de hoy.</p>
-        <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">WebSocket: {conectado ? 'conectado' : 'desconectado'}</p>
       </header>
 
       <section className="space-y-3">
@@ -125,4 +121,3 @@ export default function Dashboard() {
     </main>
   );
 }
-

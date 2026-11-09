@@ -12,7 +12,6 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [localError, setLocalError] = useState('');
 
-  // Si ya tiene sesión, redirigir automáticamente al dashboard o a la ruta previa
   if (user) {
     return <Navigate to="/dashboard" replace />;
   }
@@ -33,7 +32,6 @@ export default function Login() {
     }
   };
 
-  // Botón rápido para pruebas docentes en la sustentación
   const fillCredentials = (userEmail, userPass) => {
     setEmail(userEmail);
     setPassword(userPass);
@@ -42,12 +40,12 @@ export default function Login() {
 
   return (
     <div className="min-h-screen bg-slate-950 flex flex-col justify-center items-center p-4 relative overflow-hidden">
-      {/* Luces de fondo decorativas */}
+      
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-10 right-10 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
 
       <div className="w-full max-w-md relative z-10">
-        {/* Cabecera / Marca */}
+        
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 shadow-xl shadow-emerald-900/40 text-white mb-4">
             <Dumbbell size={32} />
@@ -60,7 +58,6 @@ export default function Login() {
           </p>
         </div>
 
-        {/* Tarjeta de Formulario */}
         <div className="bg-slate-900/90 backdrop-blur-md border border-slate-800 rounded-3xl p-8 shadow-2xl shadow-black/60">
           <h2 className="text-xl font-bold text-white mb-1">Iniciar Sesión</h2>
           <p className="text-xs text-slate-400 mb-6">
@@ -132,7 +129,6 @@ export default function Login() {
             </button>
           </form>
 
-          {/* Accesos rápidos para sustentación oral */}
           <div className="mt-8 pt-6 border-t border-slate-800">
             <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider text-center mb-3">
               Credenciales de prueba para la sustentación

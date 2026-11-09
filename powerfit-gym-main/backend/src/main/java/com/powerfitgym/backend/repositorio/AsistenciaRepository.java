@@ -9,14 +9,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface AsistenciaRepository extends JpaRepository<Asistencia, Long> {
-   
-    
+
     List<Asistencia> findBySocioId(Long socioId);
 
-    
     List<Asistencia> findByFechaHoraBetween(LocalDateTime inicio, LocalDateTime fin);
 
-   
     long countBySocioIdAndFechaHoraBetween(Long socioId, LocalDateTime inicio, LocalDateTime fin);
 
     long countByProductoIdAndFechaHoraBetween(Long productoId, LocalDateTime inicio, LocalDateTime fin);

@@ -19,7 +19,6 @@ export default function AsistenciasPage() {
   const [productoId, setProductoId] = useState('');
   const [confirmDelete, setConfirmDelete] = useState({ isOpen: false, asistencia: null, loading: false });
 
-  // Carga el listado inicial, socios y clases activas.
   const cargarDatos = async () => {
     try {
       const [lista, listaSocios, listaClases] = await Promise.all([
@@ -39,7 +38,6 @@ export default function AsistenciasPage() {
     cargarDatos();
   }, []);
 
-  // Consulta por socio cuando se elige un filtro.
   const filtrarSocio = async (id) => {
     setSocioFiltro(id);
     try {
@@ -49,7 +47,6 @@ export default function AsistenciasPage() {
     }
   };
 
-  // Restablece los filtros y vuelve a cargar todas las asistencias.
   const limpiarFiltros = async () => {
     setSocioFiltro('');
     setFechaFiltro('');
@@ -60,14 +57,12 @@ export default function AsistenciasPage() {
     }
   };
 
-  // Abre el formulario con la fecha y clase actuales.
   const abrirEdicion = (asistencia) => {
     setAsistenciaEditar(asistencia);
     setFechaHora((asistencia.fecha_hora || '').replace(' ', 'T').slice(0, 16));
     setProductoId(String(asistencia.producto_id || ''));
   };
 
-  // Actualiza fecha y clase de la asistencia seleccionada.
   const guardarEdicion = async (event) => {
     event.preventDefault();
     try {
@@ -83,10 +78,8 @@ export default function AsistenciasPage() {
     }
   };
 
-  // Abre la confirmación de borrado físico.
   const eliminar = (asistencia) => setConfirmDelete({ isOpen: true, asistencia, loading: false });
 
-  // Elimina físicamente la asistencia después de confirmar.
   const confirmarEliminacion = async () => {
     try {
       setConfirmDelete((actual) => ({ ...actual, loading: true }));
@@ -171,7 +164,7 @@ export default function AsistenciasPage() {
         onClose={() => setConfirmDelete({ isOpen: false, asistencia: null, loading: false })}
         onConfirm={confirmarEliminacion}
         title="¿Eliminar Asistencia (Físico)?"
-        message={`¿Está seguro de eliminar definitivamente el registro de asistencia #${confirmDelete.asistencia?.id}? Esta operación eliminará el registro de la base de datos (RF21).`}
+        message={`¿Está seguro de eliminar definitivamente el registro de asistencia #${confirmDelete.asistencia?.id}? Esta operación eliminará el registro de la base de datos.`}
         confirmText="Eliminar Definitivamente"
         variant="danger"
         loading={confirmDelete.loading}
@@ -179,4 +172,3 @@ export default function AsistenciasPage() {
     </main>
   );
 }
-

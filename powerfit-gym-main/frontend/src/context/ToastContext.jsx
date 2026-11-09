@@ -6,12 +6,10 @@ const ToastContext = createContext(null);
 export function ToastProvider({ children }) {
   const [toasts, setToasts] = useState([]);
 
-  // Quita un aviso de la lista.
   const removeToast = useCallback((id) => {
     setToasts((current) => current.filter((toast) => toast.id !== id));
   }, []);
 
-  // Agrega un aviso y lo quita después del tiempo indicado.
   const addToast = useCallback((message, type = 'success', duration = 3500) => {
     const id = Date.now() + Math.random().toString(36).slice(2, 6);
     setToasts((current) => [...current, { id, message, type }]);
@@ -37,7 +35,6 @@ export function ToastProvider({ children }) {
   );
 }
 
-// Permite mostrar avisos desde cualquier componente dentro del proveedor.
 export function useToast() {
   const context = useContext(ToastContext);
   if (!context) throw new Error('useToast debe usarse dentro de ToastProvider');

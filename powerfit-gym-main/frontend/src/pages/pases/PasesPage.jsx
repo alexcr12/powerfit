@@ -16,7 +16,6 @@ export default function PasesPage() {
   const [editando, setEditando] = useState(null);
   const [saving, setSaving] = useState(false);
 
-  // Recarga la lista y la disponibilidad del socio seleccionado.
   const recargarTodo = async (idSocio = socioId, fecha = fechaUso) => {
     try {
       const [lista, datosDisponibles] = await Promise.all([
@@ -37,7 +36,6 @@ export default function PasesPage() {
       .catch((error) => addToast(obtenerMensajeError(error), 'error'));
   }, []);
 
-  // Actualiza los datos del mes seleccionado para el socio.
   useEffect(() => {
     if (!socioId) {
       setDisponibles(null);
@@ -51,7 +49,6 @@ export default function PasesPage() {
       });
   }, [socioId, fechaUso, addToast]);
 
-  // Crea o edita un pase según el modo del formulario.
   const guardar = async (event) => {
     event.preventDefault();
     try {
@@ -73,7 +70,6 @@ export default function PasesPage() {
     }
   };
 
-  // Carga los datos del pase elegido en el formulario.
   const editar = (pase) => {
     setEditando(pase);
     setSocioId(String(pase.socio_id));
@@ -81,7 +77,6 @@ export default function PasesPage() {
     setFechaUso(pase.fecha_uso);
   };
 
-  // Confirma y anula el pase seleccionado.
   const anular = async (pase) => {
     if (!window.confirm(`¿Anular el pase de ${pase.nombre_inv}?`)) return;
     try {
@@ -148,5 +143,3 @@ export default function PasesPage() {
     </section>
   );
 }
-
-

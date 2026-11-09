@@ -1,7 +1,7 @@
 import api from './axiosInstance';
 
 export const categoriasService = {
-  // RF08: Listar categorías
+  
   getAll: async () => {
     const res = await api.get('/categorias');
     return res.data;
@@ -12,7 +12,6 @@ export const categoriasService = {
     return res.data;
   },
 
-  // RF07: Registrar categoría
   create: async (categoriaData) => {
     const payload = {
       nombre: categoriaData.nombre,
@@ -22,7 +21,6 @@ export const categoriasService = {
     return res.data;
   },
 
-  // RF09: Editar categoría
   update: async (id, categoriaData) => {
     const res = await api.patch(`/categorias/${id}`, categoriaData);
     return res.data;
@@ -33,4 +31,3 @@ export const categoriasService = {
     return res.data;
   },
 };
-

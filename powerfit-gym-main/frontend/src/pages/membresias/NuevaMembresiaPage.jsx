@@ -68,7 +68,3 @@ export default function NuevaMembresiaPage() {
     </section>
   );
 }
-
-
-
-

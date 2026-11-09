@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* 🌞 MODO CLARO (Por defecto) */
 @layer base {
   body {
     @apply bg-slate-50 text-slate-900 min-h-screen selection:bg-emerald-500 selection:text-white;
@@ -14,7 +13,6 @@
   @apply bg-slate-950 text-slate-100;
 }
 
-/* Scrollbar personalizada (se adapta al tema) */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -39,7 +37,6 @@
   background: #475569;
 }
 
-
 html:not(.dark) .bg-slate-900\/90,
 html:not(.dark) .bg-slate-900,
 html:not(.dark) .bg-slate-950\/40,
@@ -49,7 +46,6 @@ html:not(.dark) .bg-slate-800 {
   background-color: #ffffff !important;
   border-color: #e2e8f0 !important;
 }
-
 
 html:not(.dark) .text-white,
 html:not(.dark) .text-slate-100,
@@ -62,7 +58,6 @@ html:not(.dark) .text-slate-400 {
   color: #475569 !important;
 }
 
-
 html:not(.dark) input,
 html:not(.dark) select,
 html:not(.dark) textarea {
@@ -71,7 +66,6 @@ html:not(.dark) textarea {
   border-color: #cbd5e1 !important;
 }
 
-/* 5. Tablas y Divisores */
 html:not(.dark) .border-slate-800,
 html:not(.dark) .border-slate-700 {
   border-color: #e2e8f0 !important;

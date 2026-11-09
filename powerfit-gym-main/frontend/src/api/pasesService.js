@@ -1,6 +1,5 @@
 import api from './axiosInstance';
 
-// Adapta los campos del pase a los nombres que usa el frontend.
 const normalizar = (pase) => ({
   ...pase,
   socio_id: pase.socio?.id ?? pase.socio_id ?? pase.socioId,
@@ -20,13 +19,10 @@ export const pasesService = {
     params: { socio_id: Number(socioId), fecha },
   })).data,
 
-  // Edita el nombre o la fecha de uso del pase.
   actualizar: async (id, datos) => normalizar((await api.patch(`/pases_invitado/${id}`, datos)).data),
 
-  // Anula el pase con la baja lógica del backend.
   anular: async (id) => (await api.delete(`/pases_invitado/${id}`)).data,
 
-  // Genera un pase para el socio seleccionado.
   create: async ({ socioId, nombreInv, fechaUso }) => {
     const payload = {
       socio_id: Number(socioId),

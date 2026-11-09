@@ -1,7 +1,7 @@
 import api from './axiosInstance';
 
 export const sociosService = {
-  // RF02: Listar socios
+  
   getAll: async () => {
     const res = await api.get('/socios');
     return res.data.map(s => ({
@@ -23,7 +23,6 @@ export const sociosService = {
     };
   },
 
-  // RF01: Registrar socio
   create: async (socioData) => {
     const payload = {
       nombre: socioData.nombre,
@@ -36,7 +35,6 @@ export const sociosService = {
     return res.data;
   },
 
-  // RF03: Editar socio
   update: async (id, socioData) => {
     const payload = {
       nombre: socioData.nombre,
@@ -49,7 +47,6 @@ export const sociosService = {
     return res.data;
   },
 
-  // RF04: Desactivar socio
   deactivate: async (id) => {
     const res = await api.patch(`/socios/${id}`, { activo: false });
     return res.data;

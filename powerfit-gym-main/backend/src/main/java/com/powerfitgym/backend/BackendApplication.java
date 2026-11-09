@@ -8,7 +8,7 @@ import java.util.TimeZone;
 
 @SpringBootApplication
 public class BackendApplication {
-	// Fija la hora local de Lima incluso si el servidor usa UTC.
+	
 	@PostConstruct
 	public void configurarZonaHoraria() {
 		TimeZone.setDefault(TimeZone.getTimeZone("America/Lima"));

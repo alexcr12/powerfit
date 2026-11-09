@@ -3,8 +3,8 @@ import { Loader2 } from 'lucide-react';
 
 export default function Button({
   children,
-  variant = 'primary', // 'primary' | 'secondary' | 'danger' | 'outline' | 'ghost'
-  size = 'md', // 'sm' | 'md' | 'lg'
+  variant = 'primary', 
+  size = 'md', 
   loading = false,
   disabled = false,
   icon: Icon,
@@ -51,4 +51,3 @@ export default function Button({
     </button>
   );
 }
-

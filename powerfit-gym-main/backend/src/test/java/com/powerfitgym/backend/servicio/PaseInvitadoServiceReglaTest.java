@@ -1,7 +1,5 @@
 package com.powerfitgym.backend.servicio;
 
-/* REGLA 5: límite de pases de invitado por mes: 2; 3 si es la primera membresía del socio (contar sus membresías). */
-
 import com.powerfitgym.backend.entidad.Membresia;
 import com.powerfitgym.backend.entidad.PaseInvitado;
 import com.powerfitgym.backend.entidad.Socio;

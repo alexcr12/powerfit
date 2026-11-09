@@ -38,7 +38,3 @@ export default function ProductosPage() {
     <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900"><table className="w-full text-left text-sm"><thead><tr><th className="p-3">Producto</th><th className="p-3">Categoría</th><th className="p-3">Tipo</th><th className="p-3">Estado</th><th className="p-3">Acciones</th></tr></thead><tbody>{productos.map((p) => <tr key={p.id} className="border-t border-slate-200 dark:border-slate-800"><td className="p-3">{p.nombre}</td><td className="p-3">{categorias.find((c) => c.id === p.categoria_id)?.nombre || p.categoria_id}</td><td className="p-3">{p.requiere_asistencia ? 'Clase' : 'Amenidad'}</td><td className="p-3">{p.activo ? 'Activo' : 'Inactivo'}</td><td className="p-3"><button onClick={() => editar(p)} className="mr-3 text-emerald-700 dark:text-emerald-400">Editar</button><button onClick={() => activar(p)}>{p.activo ? 'Desactivar' : 'Reactivar'}</button></td></tr>)}</tbody></table></div>
   </section>;
 }
-
-
-
-

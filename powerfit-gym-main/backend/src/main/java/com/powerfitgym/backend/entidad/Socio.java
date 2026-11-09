@@ -51,7 +51,7 @@ public class Socio {
     @Column(nullable = false)
     private Boolean activo = true;
     @OneToMany(mappedBy = "socio")
-    @JsonIgnore // Para que no entre en un bucle infinito al pedir los datos
+    @JsonIgnore 
     private List<Membresia> membresias;
 
     @OneToMany(mappedBy = "socio")
