@@ -1,6 +1,3 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-
 name: Build and deploy JAR app to Azure Web App - powerfit
 
 on:
@@ -13,7 +10,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read #This is required for actions/checkout
+      contents: read
 
     steps:
       - uses: actions/checkout@v4
@@ -25,20 +22,21 @@ jobs:
           distribution: 'microsoft'
 
       - name: Build with Maven
-        run: mvn clean install
+        working-directory: ./powerfit-gym-main/backend
+        run: mvn clean package -DskipTests
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: java-app
-          path: '${{ github.workspace }}/target/*.jar'
+          path: ./powerfit-gym-main/backend/target/*.jar
 
   deploy:
     runs-on: ubuntu-latest
     needs: build
     permissions:
-      id-token: write #This is required for requesting the JWT
-      contents: read #This is required for actions/checkout
+      id-token: write
+      contents: read
   
     steps:
       - name: Download artifact from build job
@@ -49,9 +47,9 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_4E31A544158C4E4BAFB5299A8D42B8BB }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_1069F88A867849F897743EB9CFC058FA }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_10A9942029DD43129F9D42C8F68F619C }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_868BEEC5119A430BA950504EA345B6B4 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_DD55F298CA1D431B90581C64DB9577AA }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_AB5A85BB28564DBDA85F85274C27FAF4 }}
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
@@ -60,4 +58,3 @@ jobs:
           app-name: 'powerfit'
           slot-name: 'Production'
           package: '*.jar'
-          
