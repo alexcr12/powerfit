@@ -16,20 +16,25 @@ export default function PasesPage() {
   const [editando, setEditando] = useState(null);
   const [saving, setSaving] = useState(false);
 
-  // Carga los pases y, si hay socio elegido, su disponibilidad.
-  const cargar = async (idSocio = socioId, fecha = fechaUso) => {
+  // Recarga la lista y la disponibilidad del socio seleccionado.
+  const recargarTodo = async (idSocio = socioId, fecha = fechaUso) => {
     try {
-      const [lista, listaSocios] = await Promise.all([pasesService.getAll(), sociosService.getAll()]);
+      const [lista, datosDisponibles] = await Promise.all([
+        pasesService.getAll(),
+        idSocio ? pasesService.getDisponibles(idSocio, fecha) : Promise.resolve(null),
+      ]);
       setPases(lista);
-      setSocios(listaSocios);
-      if (idSocio) setDisponibles(await pasesService.getDisponibles(idSocio, fecha));
+      setDisponibles(datosDisponibles);
     } catch (error) {
       addToast(obtenerMensajeError(error), 'error');
     }
   };
 
   useEffect(() => {
-    cargar();
+    recargarTodo();
+    sociosService.getAll()
+      .then(setSocios)
+      .catch((error) => addToast(obtenerMensajeError(error), 'error'));
   }, []);
 
   // Actualiza los datos del mes seleccionado para el socio.
@@ -60,7 +65,7 @@ export default function PasesPage() {
       }
       setEditando(null);
       setNombreInv('');
-      await cargar(socioId, fechaUso);
+      await recargarTodo();
     } catch (error) {
       addToast(obtenerMensajeError(error), 'error');
     } finally {
@@ -82,9 +87,7 @@ export default function PasesPage() {
     try {
       await pasesService.anular(pase.id);
       addToast('Pase anulado.', 'success');
-      setSocioId(String(pase.socio_id));
-      setFechaUso(pase.fecha_uso);
-      await cargar('', '');
+      await recargarTodo();
     } catch (error) {
       addToast(obtenerMensajeError(error), 'error');
     }
@@ -114,8 +117,7 @@ export default function PasesPage() {
         {editando && <button type="button" onClick={cancelarEdicion} className="rounded border px-4 py-2">Cancelar edición</button>}
         {!editando && disponibles && (
           <div className="text-sm text-slate-600 dark:text-slate-300 sm:col-span-4">
-            <p>Tope: {disponibles.tope} · Usados: {disponibles.usados} · Restantes: {disponibles.restantes}</p>
-            <p>{disponibles.primeraMembresia ? 'Primera membresía: tope 3' : 'Tope 2'}</p>
+            <p>Tope: {disponibles.tope} · Usados: {disponibles.usados} · Restantes: {disponibles.restantes}{disponibles.primeraMembresia ? ' (primera membresía)' : ''}</p>
             {disponibles.restantes === 0 && <p>No quedan pases disponibles para este mes.</p>}
           </div>
         )}
