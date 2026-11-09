@@ -85,12 +85,15 @@ public class MembresiaService {
             throw new ReglaNegocioException("La fecha_fin debe ser igual o posterior a fecha_inicio.");
         if (datos.getMontoTotal() != null && datos.getMontoTotal().compareTo(BigDecimal.ZERO) <= 0)
             throw new ReglaNegocioException("El monto_total debe ser mayor que cero.");
-        return membresiaRepository.save(membresia);
+        Membresia actualizada = membresiaRepository.save(membresia);
+        log.info("Membresía actualizada id={}", actualizada.getId());
+        return actualizada;
     }
 
     public void eliminar(Long id) {
         Membresia membresia = buscarPorId(id);
         membresia.setActivo(false);
-        membresiaRepository.save(membresia);
+        Membresia cancelada = membresiaRepository.save(membresia);
+        log.info("Membresía cancelada id={}", cancelada.getId());
     }
 }

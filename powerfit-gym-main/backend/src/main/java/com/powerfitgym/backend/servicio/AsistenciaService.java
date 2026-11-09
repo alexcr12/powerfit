@@ -106,7 +106,9 @@ public class AsistenciaService {
 
         validarAcceso(a.getSocio(), a.getProducto(), a.getFechaHora());
 
-        return asistenciaRepository.save(a);
+        Asistencia actualizada = asistenciaRepository.save(a);
+        log.info("Asistencia actualizada id={}", actualizada.getId());
+        return actualizada;
     }
 
     private Socio resolverSocio(Socio referencia) {
@@ -143,5 +145,6 @@ public class AsistenciaService {
             throw new RuntimeException("Asistencia no encontrada con ID: " + id);
         }
         asistenciaRepository.deleteById(id);
+        log.info("Asistencia eliminada id={}", id);
     }
 }

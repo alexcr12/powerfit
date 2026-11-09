@@ -39,7 +39,9 @@ public class UsuarioService {
         }
 
         usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
-        return usuarioRepository.save(usuario);
+        Usuario creado = usuarioRepository.save(usuario);
+        log.info("Usuario creado email={} rol={}", creado.getEmail(), creado.getRol());
+        return creado;
     }
 
     public Usuario actualizar(Long id, Usuario datosActualizados) {
@@ -75,7 +77,9 @@ public class UsuarioService {
             }
         }
 
-        return usuarioRepository.save(usuario);
+        Usuario actualizado = usuarioRepository.save(usuario);
+        log.info("Usuario actualizado email={}", actualizado.getEmail());
+        return actualizado;
     }
 
     public void eliminar(Long id) {

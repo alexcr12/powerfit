@@ -6,11 +6,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import com.powerfitgym.backend.repositorio.UsuarioRepository;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.Map;
 
 @Service
+@Slf4j
 public class SocioService {
 
     private final SocioRepository socioRepository;
@@ -43,7 +45,9 @@ public class SocioService {
         } else {
             throw new IllegalArgumentException("El usuario registrado_por es obligatorio.");
         }
-        return socioRepository.save(socio);
+        Socio guardado = socioRepository.save(socio);
+        log.info("Socio registrado id={} por usuarioId={}", guardado.getId(), guardado.getRegistradoPor().getId());
+        return guardado;
     }
 
     public Socio actualizar(Long id, Socio datos) {
@@ -51,8 +55,13 @@ public class SocioService {
         if (datos.getNombre() != null) socio.setNombre(datos.getNombre());
         if (datos.getDocumento() != null) socio.setDocumento(datos.getDocumento());
         if (datos.getTelefono() != null) socio.setTelefono(datos.getTelefono());
+        boolean estabaActivo = Boolean.TRUE.equals(socio.getActivo());
         if (datos.getActivo() != null) socio.setActivo(datos.getActivo());
-        return socioRepository.save(socio);
+        Socio actualizado = socioRepository.save(socio);
+        if (datos.getActivo() != null && estabaActivo != datos.getActivo()) {
+            log.info("Socio {} id={}", datos.getActivo() ? "reactivado" : "desactivado", actualizado.getId());
+        }
+        return actualizado;
     }
 
     public Map<String, Object> obtenerMetricasSocios() {
@@ -73,5 +82,6 @@ public class SocioService {
         Socio socio = buscarPorId(id);
         socio.setActivo(false);
         socioRepository.save(socio);
+        log.info("Socio desactivado id={}", socio.getId());
     }
 }

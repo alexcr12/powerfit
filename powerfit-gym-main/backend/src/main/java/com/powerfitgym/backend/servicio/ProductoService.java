@@ -2,13 +2,16 @@ package com.powerfitgym.backend.servicio;
 
 import com.powerfitgym.backend.entidad.Categoria;
 import com.powerfitgym.backend.entidad.Producto;
+import com.powerfitgym.backend.excepcion.ReglaNegocioException;
 import com.powerfitgym.backend.repositorio.CategoriaRepository;
 import com.powerfitgym.backend.repositorio.ProductoRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@Slf4j
 public class ProductoService {
 
     private final CategoriaRepository categoriaRepository;
@@ -33,22 +36,32 @@ public class ProductoService {
     }
 
     public Producto crear(Producto producto) {
+        if (producto.getNombre() == null || producto.getNombre().trim().isEmpty())
+            throw new ReglaNegocioException("El nombre del producto es obligatorio.");
+        producto.setNombre(producto.getNombre().trim());
         if (producto.getCategoria() != null && producto.getCategoria().getId() != null) {
             Categoria catReal = categoriaRepository.findById(producto.getCategoria().getId())
                     .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
             producto.setCategoria(catReal);
         }
-        return productoRepository.save(producto);
+        Producto guardado = productoRepository.save(producto);
+        Long categoriaId = guardado.getCategoria() == null ? null : guardado.getCategoria().getId();
+        log.info("Producto creado id={} nombre={} categoriaId={}", guardado.getId(), guardado.getNombre(), categoriaId);
+        return guardado;
     }
 
     public Producto actualizar(Long id, Producto datos) {
         Producto producto = productoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
 
-        if (datos.getNombre() != null)
-            producto.setNombre(datos.getNombre());
+        if (datos.getNombre() != null) {
+            if (datos.getNombre().trim().isEmpty())
+                throw new ReglaNegocioException("El nombre del producto no puede estar vacío.");
+            producto.setNombre(datos.getNombre().trim());
+        }
         if (datos.getRequiereAsistencia() != null)
             producto.setRequiereAsistencia(datos.getRequiereAsistencia());
+        boolean estabaActivo = Boolean.TRUE.equals(producto.getActivo());
         if (datos.getActivo() != null)
             producto.setActivo(datos.getActivo());
 
@@ -58,12 +71,19 @@ public class ProductoService {
             producto.setCategoria(catReal);
         }
 
-        return productoRepository.save(producto);
+        Producto guardado = productoRepository.save(producto);
+        if (datos.getActivo() != null && estabaActivo != datos.getActivo()) {
+            log.info("Producto {} id={}", datos.getActivo() ? "reactivado" : "desactivado", guardado.getId());
+        } else {
+            log.info("Producto actualizado id={}", guardado.getId());
+        }
+        return guardado;
     }
 
     public void eliminar(Long id) {
         Producto producto = buscarPorId(id);
         producto.setActivo(false);
-        productoRepository.save(producto);
+        Producto guardado = productoRepository.save(producto);
+        log.info("Producto desactivado id={}", guardado.getId());
     }
 }

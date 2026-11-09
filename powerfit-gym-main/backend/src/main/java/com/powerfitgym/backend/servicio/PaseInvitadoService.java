@@ -60,14 +60,17 @@ public class PaseInvitadoService {
             validarYCalcular(pase.getSocio().getId(), fechaUso, pase.getId(), true);
             pase.setFechaUso(fechaUso);
         }
-        return paseRepository.save(pase);
+        PaseInvitado actualizado = paseRepository.save(pase);
+        log.info("Pase actualizado id={}", actualizado.getId());
+        return actualizado;
     }
 
     public void eliminar(Long id) {
         PaseInvitado pase = paseRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Pase no encontrado con ID: " + id));
         pase.setActivo(false);
-        paseRepository.save(pase);
+        PaseInvitado anulado = paseRepository.save(pase);
+        log.info("Pase anulado id={}", anulado.getId());
     }
 
     public Map<String, Object> disponibles(Long socioId, LocalDate fecha) {
