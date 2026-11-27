@@ -24,8 +24,8 @@ public class MembresiaService {
     private final BigDecimal precioMembresia;
 
     public MembresiaService(MembresiaRepository membresiaRepository, SocioRepository socioRepository,
-                            CategoriaRepository categoriaRepository,
-                            @Value("${membresia.precio}") BigDecimal precioMembresia) {
+            CategoriaRepository categoriaRepository,
+            @Value("${membresia.precio}") BigDecimal precioMembresia) {
         this.membresiaRepository = membresiaRepository;
         this.socioRepository = socioRepository;
         this.categoriaRepository = categoriaRepository;
@@ -55,12 +55,14 @@ public class MembresiaService {
         Categoria categoria = categoriaRepository.findById(membresia.getCategoria().getId())
                 .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
         if (!Boolean.TRUE.equals(categoria.getActivo()))
-            throw new ReglaNegocioException("El tipo de membresía " + categoria.getNombre() + " no está disponible para nuevas contrataciones");
+            throw new ReglaNegocioException(
+                    "El tipo de membresía " + categoria.getNombre() + " no está disponible para nuevas contrataciones");
 
         LocalDate hoy = LocalDate.now();
         if (membresiaRepository.existsBySocioIdAndCategoriaIdAndActivoTrueAndFechaFinGreaterThanEqual(
                 socio.getId(), categoria.getId(), hoy))
-            throw new ReglaNegocioException("El socio ya tiene una membresía vigente de tipo " + categoria.getNombre() + ".");
+            throw new ReglaNegocioException(
+                    "El socio ya tiene una membresía vigente de tipo " + categoria.getNombre() + ".");
 
         LocalDate fechaInicio = membresia.getFechaInicio() == null ? hoy : membresia.getFechaInicio();
         membresia.setSocio(socio);
@@ -76,10 +78,14 @@ public class MembresiaService {
 
     public Membresia actualizar(Long id, Membresia datos) {
         Membresia membresia = buscarPorId(id);
-        if (datos.getFechaInicio() != null) membresia.setFechaInicio(datos.getFechaInicio());
-        if (datos.getFechaFin() != null) membresia.setFechaFin(datos.getFechaFin());
-        if (datos.getMontoTotal() != null) membresia.setMontoTotal(datos.getMontoTotal());
-        if (datos.getActivo() != null) membresia.setActivo(datos.getActivo());
+        if (datos.getFechaInicio() != null)
+            membresia.setFechaInicio(datos.getFechaInicio());
+        if (datos.getFechaFin() != null)
+            membresia.setFechaFin(datos.getFechaFin());
+        if (datos.getMontoTotal() != null)
+            membresia.setMontoTotal(datos.getMontoTotal());
+        if (datos.getActivo() != null)
+            membresia.setActivo(datos.getActivo());
 
         if (membresia.getFechaFin().isBefore(membresia.getFechaInicio()))
             throw new ReglaNegocioException("La fecha_fin debe ser igual o posterior a fecha_inicio.");
